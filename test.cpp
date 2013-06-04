@@ -1,3 +1,4 @@
+#include "util/OAuth.h"
 #include "util/HttpRequestFactory.h"
 #include "util/HttpRequest.h"
 
@@ -6,29 +7,39 @@
 
 using namespace std;
 using namespace http;
+using namespace oauth;
 
-int main() {
-  HttpRequestFactory* f = HttpRequestFactory::createFactory();
+int main(int argc, char** argv) {
+  OAuth o("2tvqhnmuke5p8h7", "gvqvzr324d5wnrz");
 
-  HttpRequest* request = f->createHttpRequest("https://api.dropbox.com/1/oauth/request_token");
-  request->setMethod(HttpPostRequest);
-  request->addHeader("Authorization", "OAuth oauth_version=\"1.0\", oauth_signature_method=\"PLAINTEXT\", oauth_consumer_key=\"2tvqhnmuke5p8h7\", oauth_signature=\"gvqvzr324d5wnrz&\"");
-  request->nullTerminateResponse(true);
-  cerr << "execute: " << request->execute() << endl;
-  cerr << "code: " << request->getResponseCode() << endl;
-  cerr << "size: " << request->getResponseSize() << endl;
+  if (argc != 3) {
+    o.fetchRequestToken("https://api.dropbox.com/1/oauth/request_token");
+    cout << "Token: " << o.getRequestToken() << endl;
+    cout << "Secret: " << o.getRequestTokenSecret() << endl;
 
-  string response((char *)request->getResponse());
-  cerr << "Response:" << endl;
-  cerr << response << endl;
+    char c;
+    cin >> c;
 
-  cerr << "Response headers:" << endl;
-
-  for (auto i : request->getResponseHeaders()) {
-    cerr << i.first << ": " << i.second << endl;
+    o.fetchAccessToken("https://api.dropbox.com/1/oauth/access_token");
+    cout << "Token: " << o.getAccessToken() << endl;
+    cout << "Secret: " << o.getAccessTokenSecret() << endl;
+  } else {
+    o.setAccessToken(argv[1]);
+    o.setAccessTokenSecret(argv[2]);
   }
 
-  delete request;
+  HttpRequestFactory* f = HttpRequestFactory::createFactory();
+  HttpRequest* r = 
+    f->createHttpRequest("https://api.dropbox.com/1/account/info");
+  
+  o.addOAuthAccessHeader(r);
+
+  r->execute();
+  cout << "Response code: " << r->getResponseCode() << endl;
+  cout << "Response: " << 
+    string((char *)r->getResponse(), r->getResponseSize()) << endl;
+ 
+  delete r;
 
   return 0;
 }
