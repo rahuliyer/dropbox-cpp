@@ -21,7 +21,6 @@ HttpRequest::HttpRequest(HttpRequestFactory* factory,
       curl_(curl_easy_init(), curl_easy_cleanup), 
       slist_(NULL, curl_slist_free_all) {
   factory_->increaseRequestCount();
-  shouldNullTerminateResponse_ = false;
 }
 
 void HttpRequest::setMethod(HttpRequestMethod method) {
@@ -54,9 +53,6 @@ size_t HttpRequest::writeFunction(char* buf, size_t size, size_t n, void *p) {
 
   if (!r->responseSize_) {
     r->responseSize_ = numBytes;
-    if (r->shouldNullTerminateResponse_) {
-      r->responseSize_++;
-    }
     r->response_.reset((uint8_t *)std::malloc(r->responseSize_));
   } else {
     r->responseSize_ += numBytes;
@@ -217,15 +213,7 @@ int HttpRequest::execute() {
     return ret;
   }
 
-  if (shouldNullTerminateResponse_) {
-    response_.get()[responseSize_] = 0;
-  }
-
   return 0;
-}
-
-void HttpRequest::nullTerminateResponse(bool val) {
-  shouldNullTerminateResponse_ = val;
 }
 
 long HttpRequest::getResponseCode() {

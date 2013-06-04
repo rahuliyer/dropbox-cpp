@@ -31,8 +31,6 @@ public:
   const std::map<std::string,
     std::string>&                 getHeaders();
 
-  void                            nullTerminateResponse(bool);
-
   int                             execute();
 
   long                            getResponseCode();
