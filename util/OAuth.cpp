@@ -9,11 +9,12 @@ using namespace oauth;
 using namespace std;
 using namespace http;
 
-OAuth::OAuth(string key, string secret, OAuthSecurityMethod method) :
+OAuth::OAuth(string key,
+  string secret, string version, OAuthSecurityMethod method) :
     consumerKey_(key), 
     consumerSecret_(secret), 
     securityMethod_(method),
-    oauthVersion_("1.0"),
+    oauthVersion_(version),
     requestFactory_(HttpRequestFactory::createFactory()) {
 }
 
@@ -62,7 +63,7 @@ void OAuth::getTokenAndSecret(string& response, string& token, string& secret) {
   secret = i->second;
 }
 
-void OAuth::addOAuthHeader(HttpRequest* r, string token, string secret) {
+void OAuth::addOAuthHeader(HttpRequest* r, string token, string secret) const {
   stringstream ss;
 
   ss << "OAuth oauth_version=\"" << oauthVersion_ << "\", ";
@@ -131,19 +132,19 @@ void OAuth::fetchAccessToken(string url) {
   getTokenAndSecret(response, accessToken_, accessSecret_);
 }
 
-string OAuth::getRequestToken() {
+string OAuth::getRequestToken() const {
   return requestToken_;
 }
 
-string OAuth::getRequestTokenSecret() {
+string OAuth::getRequestTokenSecret() const {
   return requestSecret_;
 }
 
-string OAuth::getAccessToken() {
+string OAuth::getAccessToken() const {
   return accessToken_;
 }
 
-string OAuth::getAccessTokenSecret() {
+string OAuth::getAccessTokenSecret() const {
   return accessSecret_;
 }
 
@@ -155,6 +156,6 @@ void OAuth::setAccessTokenSecret(string secret) {
   accessSecret_ = secret;
 }
 
-void OAuth::addOAuthAccessHeader(HttpRequest* r) {
+void OAuth::addOAuthAccessHeader(HttpRequest* r) const {
   addOAuthHeader(r, accessToken_, accessSecret_);
 }
