@@ -27,7 +27,7 @@ void HttpRequest::setMethod(HttpRequestMethod method) {
   method_ = method;
 }
 
-HttpRequestMethod HttpRequest::getMethod() {
+HttpRequestMethod HttpRequest::getMethod() const {
   return method_;
 }
 
@@ -35,7 +35,7 @@ void HttpRequest::addParam(const string& param, const string& value) {
   params_[param] = value;
 }
 
-const map<string, string>& HttpRequest::getParams() {
+const map<string, string>& HttpRequest::getParams() const {
   return params_;
 }
 
@@ -43,7 +43,7 @@ void HttpRequest::addHeader(const string& header, const string& value) {
   headers_[header] = value;
 }
 
-const map<string, string>& HttpRequest::getHeaders() {
+const map<string, string>& HttpRequest::getHeaders() const {
   return headers_;
 }
 
@@ -216,19 +216,19 @@ int HttpRequest::execute() {
   return 0;
 }
 
-long HttpRequest::getResponseCode() {
+long HttpRequest::getResponseCode() const {
   return responseCode_;
 }
 
-uint8_t* HttpRequest::getResponse() {
+uint8_t* HttpRequest::getResponse() const {
   return response_.get();
 }
 
-size_t HttpRequest::getResponseSize() {
+size_t HttpRequest::getResponseSize() const {
   return responseSize_;
 }
 
-const map<string, string>& HttpRequest::getResponseHeaders() {
+const map<string, string>& HttpRequest::getResponseHeaders() const {
   return responseHeaders_;
 }
 
