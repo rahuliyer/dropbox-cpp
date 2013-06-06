@@ -7,7 +7,9 @@ LIBRARY_INCLUDES=-L/usr/lib -L.
 
 COMMON_LIBS=-lcurl
 
-OBJS=util/HttpRequestFactory.o util/HttpRequest.o util/OAuth.o
+UTIL_OBJS=util/HttpRequestFactory.o util/HttpRequest.o util/OAuth.o
+DROPBOX_OBJS=DropboxAccountInfo.o
+OBJS=$(UTIL_OBJS) $(DROPBOX_OBJS)
 
 all: libdropbox.a test.o
 	$(CXX) $(INCLUDES) $(FLAGS) $(LIBRARY_INCLUDES) $(DEFINES) test.o	\
