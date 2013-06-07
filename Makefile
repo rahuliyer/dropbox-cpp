@@ -8,7 +8,7 @@ LIBRARY_INCLUDES=-L/usr/lib -L.
 COMMON_LIBS=-lcurl
 
 UTIL_OBJS=util/HttpRequestFactory.o util/HttpRequest.o util/OAuth.o
-DROPBOX_OBJS=DropboxAccountInfo.o
+DROPBOX_OBJS=DropboxAccountInfo.o DropboxApi.o
 OBJS=$(UTIL_OBJS) $(DROPBOX_OBJS)
 
 all: libdropbox.a test.o

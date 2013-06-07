@@ -14,7 +14,10 @@ struct QuotaInfo {
 
 class AccountInfo {
 public:
+  AccountInfo() { }
   AccountInfo(std::string& json);
+
+  void            readJson(std::string&);
 
   std::string     getReferralLink() const;
   std::string     getDisplayName() const;
@@ -24,6 +27,8 @@ public:
   QuotaInfo       getQuotaInfo() const;
 
 private:
+  static void     readFromJson(AccountInfo*, std::string& json);
+
   std::string           referralLink_;
   std::string           displayName_;
   std::string           uid_;

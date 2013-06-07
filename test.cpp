@@ -2,17 +2,34 @@
 #include "util/HttpRequestFactory.h"
 #include "util/HttpRequest.h"
 #include "DropboxAccountInfo.h"
+#include "DropboxApi.h"
 
 #include <iostream>
 #include <cstring>
 #include <sstream>
+#include <functional>
 
 using namespace std;
+using namespace std::placeholders;
 using namespace http;
 using namespace oauth;
 using namespace dropbox;
 
+class Foo {
+public:
+  Foo() { }
+
+  void bar(string token, string secret) {
+    cout << "Token: " << token << endl;
+    cout << "Secret: " << secret << endl;
+
+    char a;
+    cin >> a;
+  }
+};
+
 int main(int argc, char** argv) {
+#if 0
   OAuth o("2tvqhnmuke5p8h7", "gvqvzr324d5wnrz");
 
   if (argc != 3) {
@@ -56,6 +73,30 @@ int main(int argc, char** argv) {
   cout << "\tnormal: " << ac.getQuotaInfo().normal << endl;
 
   delete r;
+#endif
+
+  DropboxApi d("2tvqhnmuke5p8h7", "gvqvzr324d5wnrz");
+  Foo f;
+
+  if (argc != 3) {
+    function<void(string, string)> fn = bind(&Foo::bar, &f, _1, _2);
+    d.authenticate(fn);
+  } else {
+    d.setAccessToken(argv[1], argv[2]);
+  }
+
+  AccountInfo ac2;
+  cout << "Response: " << d.getAccountInfo(ac2) << endl;
+  cout << endl;
+  cout << "refferal link: " << ac2.getReferralLink() << endl;
+  cout << "display_name: " << ac2.getDisplayName() << endl;
+  cout << "uid: " << ac2.getUid() << endl;
+  cout << "country: " << ac2.getCountry() << endl;
+  cout << "email: " << ac2.getEmail() << endl;
+  cout << "Quota info:" << endl;
+  cout << "\tshared: " << ac2.getQuotaInfo().shared << endl;
+  cout << "\tquota: " << ac2.getQuotaInfo().quota << endl;
+  cout << "\tnormal: " << ac2.getQuotaInfo().normal << endl;
 
   return 0;
 }

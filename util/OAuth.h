@@ -1,3 +1,6 @@
+#ifndef __OAUTH_H__
+#define __OAUTH_H__
+
 #include "util/HttpRequestFactory.h"
 #include "util/HttpRequest.h"
 
@@ -51,3 +54,4 @@ private:
 };
 }
 
+#endif

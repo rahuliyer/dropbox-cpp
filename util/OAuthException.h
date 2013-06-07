@@ -1,3 +1,6 @@
+#ifndef __OAUTH_EXCEPTION_H__
+#define __OAUTH_EXCEPTION_H__
+
 #include <exception>
 
 namespace oauth {
@@ -27,3 +30,5 @@ private:
   std::string         errStr_;
 };
 }
+
+#endif

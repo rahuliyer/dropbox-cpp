@@ -2,11 +2,14 @@
 #define __DROPBOX_EXCEPTION_H__
 
 #include <exception>
+#include <string>
 
 namespace dropbox {
 
 enum DropboxErrorCode {
-  MalformedResponse = -1,
+  CURL_ERROR = -1,
+  MALFORMED_RESPONSE = -2,
+  SUCCESS = 200,
 };
 
 class DropboxException : public std::exception {
