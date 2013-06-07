@@ -1,6 +1,9 @@
 #ifndef __HTTP_REQUEST_H__
 #define __HTTP_REQUEST_H__
 
+/**
+ * A simple wrapper around the curl "easy" functions
+ */
 #include "HttpRequestFactory.h"
 
 #include <sys/types.h>
@@ -15,31 +18,144 @@ namespace http {
 
 class HttpRequest {
 public:
+  /**
+   * Construct a HttpRequest
+   *
+   * @param     factory   The HttpRequestFactory that created this request
+   * @param     url       The url to hit
+   * @param     method    The Http method (GET/PUT etc.) to use
+   */
   HttpRequest(HttpRequestFactory* factory, std::string url, 
     HttpRequestMethod method);
   
+  /**
+   * Set the request method
+   *
+   * @param     method    Http request method (GET/POST etc.)
+   *
+   * @return    void
+   */
   void                            setMethod(HttpRequestMethod);
+
+  /**
+   * Get the HttpRequestMethod being used
+   *
+   * @return    HttpRequestMethod
+   */
   HttpRequestMethod               getMethod() const;
 
+  /**
+   * Addsa parameter to the http request. All params are consolidated
+   * like:
+   * param1=value1&param2=value2...
+   * before the request is sent.
+   *
+   * @param     param   Name of the param
+   * @param     value   Value of the param
+   *
+   * @return    void
+   */
   void                            addParam(const std::string& param, 
                                     const std::string& value);
+
+  /**
+   * Returns the params in a map of params to values
+   *
+   * @return    map<string, string>   map of the params and values
+   */
   const std::map<std::string, 
     std::string>&                 getParams() const;
 
+  /**
+   * Adds a header to the http request. The header is serialized as:
+   * <header>: <value>
+   * at the time of sending the http request
+   *
+   * @param     header    The name of the header (e.g Authorization)
+   * @param     value     Value of that header
+   *
+   * @return    void
+   */
   void                            addHeader(const std::string& header, 
                                     const std::string& value);
+
+  /**
+   * Get headers as a map of header names to values
+   *
+   * @return    map<string, string>    Map of header names to values
+   */
   const std::map<std::string,
     std::string>&                 getHeaders() const;
 
+  /**
+   * Dispatch the http request
+   *
+   * @return    int   The error code returned by curl. 0 on success, 
+   *                  non zero on failure. 
+   *                  Check /usr/include/curl/curl.h for values
+   */
   int                             execute();
 
+  /**
+   * Get the Http response code for the executed http request
+   *
+   * @return    long    Http response code
+   */
   long                            getResponseCode() const;
+
+  /**
+   * Get the response returned by the server
+   *
+   * @return    uint8_t* Bytes returned as the http response
+   */
   uint8_t*                        getResponse() const;
+
+  /**
+   * The size of the http response
+   *
+   * @return    size_t   Number of bytes in the http response
+   */
   size_t                          getResponseSize() const;
+
+  /**
+   * The http headers set in the response returned as a map of header name
+   * to value
+   *
+   * @return    map<string, string>   map of header names to values
+   */
   const std::map<std::string, 
     std::string>&                 getResponseHeaders() const;
 
+  /**
+   * Callback function to be called when data has been received
+   * This function is called by curl when there is data it has successfully 
+   * read.
+   *
+   * @param     char*   buf     Data that was received
+   * @param     size_t  nmemb   Number of members
+   * @param     size_t  size    Size of the member
+   * @param     void*   cookie  Any cookie we wish to pass. In this case
+   *                            it's a pointer to the HttpRequest itself
+   *
+   * @return    size_t  The number of bytes consumed. If this is not 
+   *                    the same as nmemb * size, curl will throw an error.
+   */
   static size_t                   writeFunction(char*, size_t, size_t, void*);
+
+  /**
+   * Callback function to be called when header data has been received
+   * This function is called by curl when there is header data it has 
+   * successfully read.
+   *
+   * @param     char*   buf     Data that was received
+   * @param     size_t  nmemb   Number of members
+   * @param     size_t  size    Size of the member
+   * @param     void*   cookie  Any cookie we wish to pass. In this case
+   *                            it's a pointer to the HttpRequest itself
+   *
+   * @return    size_t  The number of bytes consumed. If this is not 
+   *                    the same as nmemb * size, curl will throw an error.
+   */
   static size_t                   headerFunction(char*, size_t, size_t, void*);
   
   ~HttpRequest();
