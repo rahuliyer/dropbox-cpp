@@ -1,7 +1,9 @@
 #include "util/OAuth.h"
 #include "util/HttpRequestFactory.h"
 #include "util/HttpRequest.h"
+
 #include "DropboxAccountInfo.h"
+#include "DropboxMetadata.h"
 #include "DropboxApi.h"
 
 #include <iostream>
@@ -27,6 +29,21 @@ public:
     cin >> a;
   }
 };
+
+void dumpMetadata(DropboxMetadata& m) {
+  cout << "Path: " << m.path_ << endl << \
+    "Size: " << m.sizeStr_ << endl << \
+    "Size (bytes): " << m.sizeBytes_ << endl << \
+    "isDir: " << m.isDir_ << endl << \
+    "mime type: " << m.mimeType_ << endl << \
+    "isDeleted: " << m.isDeleted_ << endl << \
+    "rev: " << m.rev_ << endl << \
+    "hash: " << m.hash_ << endl << \
+    "thumb exists: " << m.thumbExists_ << endl << \
+    "icon: " << m.icon_ << endl << \
+    "client mtime: " << m.clientMtime_ << endl << \
+    "root: " << m.root_ << endl << endl;
+}
 
 int main(int argc, char** argv) {
 #if 0
@@ -79,7 +96,7 @@ int main(int argc, char** argv) {
   Foo f;
 
   if (argc != 3) {
-    function<void(string, string)> fn = bind(&Foo::bar, &f, _1, _2);
+    function<void(string, string)> fn = bind(&Foo::bar, &f, std::placeholders::_1, std::placeholders::_2);
     d.authenticate(fn);
   } else {
     d.setAccessToken(argv[1], argv[2]);
@@ -98,6 +115,18 @@ int main(int argc, char** argv) {
   cout << "\tquota: " << ac2.getQuotaInfo().quota << endl;
   cout << "\tnormal: " << ac2.getQuotaInfo().normal << endl;
 
+  cout << endl;
+
+  DropboxMetadataRequest req("/Photos/Sample Album", true, true);
+  DropboxMetadataResponse res;
+  d.getFileMetadata(req, res);
+
+  dumpMetadata(res.getMetadata());
+
+  cout << "Children: " << endl;
+  for (auto i : res.getChildren()) {
+    dumpMetadata(i);
+  }
   return 0;
 }
 

@@ -44,15 +44,7 @@ void DropboxApi::setAccessToken(string token, string secret) {
   oauth_->setAccessTokenSecret(secret);
 }
 
-DropboxErrorCode DropboxApi::getAccountInfo(AccountInfo& info) {
-  unique_ptr<HttpRequest> r(
-    httpFactory_->createHttpRequest("https://api.dropbox.com/1/account/info"));
-
-  {
-    lock_guard<mutex> g(stateLock_);
-    oauth_->addOAuthAccessHeader(r.get());
-  }
-
+DropboxErrorCode DropboxApi::execute(shared_ptr<HttpRequest> r) {
   int ret;
   if ((ret = r->execute())) {
     stringstream ss;
@@ -61,7 +53,19 @@ DropboxErrorCode DropboxApi::getAccountInfo(AccountInfo& info) {
     throw DropboxException(CURL_ERROR, ss.str());
   }
 
-  DropboxErrorCode code = (DropboxErrorCode)r->getResponseCode();
+  return (DropboxErrorCode)r->getResponseCode();
+}
+
+DropboxErrorCode DropboxApi::getAccountInfo(AccountInfo& info) {
+  shared_ptr<HttpRequest> r(
+    httpFactory_->createHttpRequest("https://api.dropbox.com/1/account/info"));
+
+  {
+    lock_guard<mutex> g(stateLock_);
+    oauth_->addOAuthAccessHeader(r.get());
+  }
+
+  DropboxErrorCode code = execute(r);
 
   if (code == SUCCESS) {
     string response((char *)r->getResponse(), r->getResponseSize());
@@ -70,3 +74,53 @@ DropboxErrorCode DropboxApi::getAccountInfo(AccountInfo& info) {
 
   return code;
 }
+
+DropboxErrorCode DropboxApi::getFileMetadata(DropboxMetadataRequest& req,
+    DropboxMetadataResponse& res) {
+  stringstream ss;
+  ss << "https://api.dropbox.com/1/metadata/dropbox/" << req.path();
+
+  shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
+
+  {
+    lock_guard<mutex> g(stateLock_);
+    oauth_->addOAuthAccessHeader(r.get());
+  }
+
+  r->setMethod(HttpGetRequest);
+
+  stringstream s;
+  s << req.getLimit();
+  r->addParam("file_limit", s.str());
+
+  if (req.getHash().compare("")) {
+    r->addParam("hash", req.getHash());
+  }
+  
+  if (req.includeDeleted()) {
+    r->addParam("include_deleted", "true");
+  } else {
+    r->addParam("include_deleted", "false");
+  }
+
+  if (req.includeChildren()) {
+    r->addParam("list", "true");
+  } else {
+    r->addParam("list", "false");
+  }
+
+  if (req.getRev().compare("")) {
+    r->addParam("rev", req.getRev());
+  }
+
+  DropboxErrorCode code = execute(r);
+  if (code != SUCCESS) {
+    return code;
+  }
+
+  string response((char *)r->getResponse(), r->getResponseSize());
+  res.readJson(response);
+
+  return code;
+}
+

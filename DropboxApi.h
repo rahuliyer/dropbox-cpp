@@ -3,9 +3,11 @@
 
 #include "util/OAuth.h"
 #include "util/HttpRequestFactory.h"
+#include "util/HttpRequest.h"
 
 #include "DropboxException.h"
 #include "DropboxAccountInfo.h"
+#include "DropboxMetadata.h"
 
 #include <string>
 #include <memory>
@@ -27,7 +29,12 @@ public:
 
   DropboxErrorCode getAccountInfo(AccountInfo&);
 
+  DropboxErrorCode getFileMetadata(DropboxMetadataRequest&, 
+    DropboxMetadataResponse&);
+  
 private:
+  DropboxErrorCode    execute(std::shared_ptr<http::HttpRequest>);
+
   std::mutex                      stateLock_;
   std::unique_ptr<oauth::OAuth>   oauth_;
   http::HttpRequestFactory*       httpFactory_;
