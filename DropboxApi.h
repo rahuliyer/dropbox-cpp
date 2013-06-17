@@ -14,6 +14,10 @@
 #include <mutex>
 
 namespace dropbox {
+
+#define DROPBOX_ROOT "dropbox"
+#define SANDBOX_ROOT "sandbox"
+
 class DropboxApi {
 public:
   DropboxApi(const std::string appKey, const std::string appSecret);
@@ -27,6 +31,8 @@ public:
 
   void setAccessToken(std::string token, std::string secret);
 
+  void setRoot(const std::string);
+
   DropboxErrorCode getAccountInfo(AccountInfo&);
 
   DropboxErrorCode getFileMetadata(DropboxMetadataRequest&, 
@@ -35,6 +41,7 @@ public:
 private:
   DropboxErrorCode    execute(std::shared_ptr<http::HttpRequest>);
 
+  std::string                     root_;
   std::mutex                      stateLock_;
   std::unique_ptr<oauth::OAuth>   oauth_;
   http::HttpRequestFactory*       httpFactory_;

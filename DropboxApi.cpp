@@ -14,6 +14,7 @@ DropboxApi::DropboxApi(string appKey, string appSecret) {
 
   lock_guard<mutex> g(stateLock_);
   oauth_.reset(new OAuth(appKey, appSecret));
+  root_ = DROPBOX_ROOT;
 }
 
 DropboxApi::DropboxApi(string appKey, 
@@ -42,6 +43,11 @@ void DropboxApi::setAccessToken(string token, string secret) {
   lock_guard<mutex> g(stateLock_);
   oauth_->setAccessToken(token);
   oauth_->setAccessTokenSecret(secret);
+}
+
+void DropboxApi::setRoot(const string root) {
+  lock_guard<mutex> g(stateLock_);
+  root_ = root;
 }
 
 DropboxErrorCode DropboxApi::execute(shared_ptr<HttpRequest> r) {
@@ -78,7 +84,7 @@ DropboxErrorCode DropboxApi::getAccountInfo(AccountInfo& info) {
 DropboxErrorCode DropboxApi::getFileMetadata(DropboxMetadataRequest& req,
     DropboxMetadataResponse& res) {
   stringstream ss;
-  ss << "https://api.dropbox.com/1/metadata/dropbox/" << req.path();
+  ss << "https://api.dropbox.com/1/metadata/" << root_ << "/" << req.path();
 
   shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
 
