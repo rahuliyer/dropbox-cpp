@@ -35,6 +35,14 @@ void HttpRequest::addParam(const string& param, const string& value) {
   params_[param] = value;
 }
 
+void HttpRequest::addIntegerParam(const string& param, const int value) {
+  stringstream ss;
+
+  ss << value;
+
+  addParam(param, ss.str());
+}
+
 const map<string, string>& HttpRequest::getParams() const {
   return params_;
 }
@@ -173,7 +181,7 @@ int HttpRequest::execute() {
   }
 
   // Set the URL
-  if ((ret = curl_easy_setopt(curl_.get(), CURLOPT_URL, url_.c_str())) 
+  if ((ret = curl_easy_setopt(curl_.get(), CURLOPT_URL, url.c_str())) 
       != CURLE_OK) {
     return ret;
   }

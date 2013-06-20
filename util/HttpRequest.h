@@ -45,7 +45,7 @@ public:
   HttpRequestMethod               getMethod() const;
 
   /**
-   * Addsa parameter to the http request. All params are consolidated
+   * Adds a parameter to the http request. All params are consolidated
    * like:
    * param1=value1&param2=value2...
    * before the request is sent.
@@ -57,6 +57,18 @@ public:
    */
   void                            addParam(const std::string& param, 
                                     const std::string& value);
+
+  /**
+   * Converts the integer value for a parameter to a string and adds it
+   * to the request
+   *
+   * @param     param   Name of the param
+   * @param     value   Integer value for the param
+   *
+   * @return    void
+   */
+   void                           addIntegerParam(const std::string& param,
+                                    const int val);
 
   /**
    * Returns the params in a map of params to values

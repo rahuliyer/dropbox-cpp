@@ -61,40 +61,6 @@ bool DropboxMetadataRequest::includeChildren() const {
 DropboxMetadataResponse::DropboxMetadataResponse() {
 }
 
-void DropboxMetadataResponse::readMetadataFromJson(ptree& pt,
-    DropboxMetadata& m) {
-  // Mandatory fields
-  m.path_ = pt.get<string>("path");
-  m.sizeStr_ = pt.get<string>("size");
-  m.sizeBytes_ = pt.get<size_t>("bytes");
-  m.icon_ = pt.get<string>("icon");
-  m.root_ = pt.get<string>("root");
-
-  // Optional fields
-  m.rev_ = pt.get<string>("rev", "");
-  m.hash_ = pt.get<string>("hash", "");
-  m.clientMtime_ = pt.get<string>("client_mtime", "");
-
-  auto boolParser = [&](string field, string defaultVal, bool& val) {
-    string strval = pt.get<string>(field, defaultVal);
-    if (strval.compare("true") == 0) {
-      val = true;
-    } else if (strval.compare("false") == 0) {
-      val = false;
-    } else {
-      stringstream s;
-      s << "Bad '" << field << "' value: " << strval;
-      throw DropboxException(MALFORMED_RESPONSE, s.str());
-    }
-  };
-
-  boolParser("is_dir", "false", m.isDir_);
-  boolParser("is_deleted", "false", m.isDeleted_);
-  boolParser("thumb_exists", "false", m.thumbExists_);
-
-  m.mimeType_ = pt.get<string>("mime_type", "");
-}  
-
 void DropboxMetadataResponse::readJson(const string& json) {
   try {
     stringstream ss;
@@ -103,11 +69,11 @@ void DropboxMetadataResponse::readJson(const string& json) {
     ptree pt;
     read_json(ss, pt);
     
-    readMetadataFromJson(pt, metadata_);
+    DropboxMetadata::readFromJson(pt, metadata_);
 
     BOOST_FOREACH(ptree::value_type& v, pt.get_child("contents")) {
       DropboxMetadata m;
-      readMetadataFromJson(v.second, m);
+      DropboxMetadata::readFromJson(v.second, m);
       children_.push_back(m);
     }
   } catch (exception& e) {

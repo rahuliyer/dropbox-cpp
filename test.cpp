@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
 
   cout << endl;
 
-  DropboxMetadataRequest req("/Photos/Sample Album", true, true);
+  DropboxMetadataRequest req("/", true, false);
   DropboxMetadataResponse res;
   d.getFileMetadata(req, res);
 
@@ -127,6 +127,15 @@ int main(int argc, char** argv) {
   for (auto i : res.getChildren()) {
     dumpMetadata(i);
   }
+
+  DropboxRevisions revs;
+  d.getRevisions("/test.txt", 2, revs);
+
+  cout << "Revisions" << endl;
+  for (auto i : revs.getRevisions()) {
+    dumpMetadata(i);
+  }
+
   return 0;
 }
 

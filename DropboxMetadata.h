@@ -1,6 +1,8 @@
 #ifndef __DROPBOX_METADATA_H__
 #define __DROPBOX_METADATA_H__
 
+#include "DropboxMetadataType.h"
+
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
@@ -8,23 +10,6 @@
 #include <vector>
 
 namespace dropbox {
-
-const size_t DEFAULT_FILE_LIMIT = 10;
-
-typedef struct DropboxMetadata {
-  std::string         path_;
-  std::string         sizeStr_;
-  size_t              sizeBytes_;
-  bool                isDir_;
-  std::string         mimeType_;
-  bool                isDeleted_;
-  std::string         rev_;
-  std::string         hash_;
-  bool                thumbExists_;
-  std::string         icon_;
-  std::string         clientMtime_;
-  std::string         root_;
-} DropboxMetadata;
 
 class DropboxMetadataRequest {
 public:

@@ -95,24 +95,22 @@ DropboxErrorCode DropboxApi::getFileMetadata(DropboxMetadataRequest& req,
 
   r->setMethod(HttpGetRequest);
 
-  stringstream s;
-  s << req.getLimit();
-  r->addParam("file_limit", s.str());
+  r->addIntegerParam("file_limit", req.getLimit());
 
   if (req.getHash().compare("")) {
     r->addParam("hash", req.getHash());
   }
   
-  if (req.includeDeleted()) {
-    r->addParam("include_deleted", "true");
-  } else {
-    r->addParam("include_deleted", "false");
-  }
-
   if (req.includeChildren()) {
     r->addParam("list", "true");
   } else {
     r->addParam("list", "false");
+  }
+
+  if (req.includeDeleted()) {
+    r->addParam("include_deleted", "true");
+  } else {
+    r->addParam("include_deleted", "false");
   }
 
   if (req.getRev().compare("")) {
@@ -130,3 +128,32 @@ DropboxErrorCode DropboxApi::getFileMetadata(DropboxMetadataRequest& req,
   return code;
 }
 
+DropboxErrorCode DropboxApi::getRevisions(string path,
+    size_t numRevisions, DropboxRevisions& revs) {
+  stringstream ss;
+
+  ss << "https://api.dropbox.com/1/revisions/" << root_ << "/" << path;
+
+  shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
+
+  {
+    lock_guard<mutex> g(stateLock_);
+    oauth_->addOAuthAccessHeader(r.get());
+  }
+
+  r->setMethod(HttpGetRequest);
+
+  if (numRevisions) {
+    r->addIntegerParam("rev_limit", numRevisions);
+  }
+
+  DropboxErrorCode code = execute(r);
+  if (code != SUCCESS) {
+    return code;
+  }
+
+  string response((char *)r->getResponse(), r->getResponseSize());
+  revs.readFromJson(response);
+
+  return code;
+}

@@ -8,6 +8,7 @@
 #include "DropboxException.h"
 #include "DropboxAccountInfo.h"
 #include "DropboxMetadata.h"
+#include "DropboxRevisions.h"
 
 #include <string>
 #include <memory>
@@ -37,7 +38,11 @@ public:
 
   DropboxErrorCode getFileMetadata(DropboxMetadataRequest&, 
     DropboxMetadataResponse&);
-  
+
+  DropboxErrorCode getRevisions(std::string path, 
+    size_t numRevisions, 
+    DropboxRevisions&);
+
 private:
   DropboxErrorCode    execute(std::shared_ptr<http::HttpRequest>);
 
