@@ -137,6 +137,12 @@ int main(int argc, char** argv) {
   }
 
   DropboxMetadata delMetadata;
+  d.deleteFile("/test2", delMetadata);
+
+  cout << "deleted file metadata: " << endl;
+  dumpMetadata(delMetadata);
+
+  sleep(30);
   d.restoreFile("/test2", "160ef6ddfe", delMetadata);
 
   cout << "restored file metadata: " << endl;

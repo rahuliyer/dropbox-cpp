@@ -45,6 +45,8 @@ public:
 
   DropboxErrorCode restoreFile(std::string path, std::string, DropboxMetadata&);
 
+  DropboxErrorCode deleteFile(std::string path, DropboxMetadata&);
+
 private:
   DropboxErrorCode    execute(std::shared_ptr<http::HttpRequest>);
 

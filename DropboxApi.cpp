@@ -197,3 +197,33 @@ DropboxErrorCode DropboxApi::restoreFile(string path,
 
   return code;
 }
+
+DropboxErrorCode DropboxApi::deleteFile(string path, DropboxMetadata& m) {
+  shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(
+    "https://api.dropbox.com/1/fileops/delete"));
+
+  {
+    lock_guard<mutex> g(stateLock_);
+    oauth_->addOAuthAccessHeader(r.get());
+  }
+
+  r->addParam("root", root_);
+  r->addParam("path", path);
+
+  DropboxErrorCode code = execute(r);
+  if (code != SUCCESS) {
+    return code;
+  }
+  
+  string response((char *)r->getResponse(), r->getResponseSize());
+
+  stringstream s;
+  s << response;
+
+  ptree pt;
+  read_json(s, pt);
+
+  DropboxMetadata::readFromJson(pt, m);
+
+  return code;
+}
