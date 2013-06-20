@@ -50,6 +50,8 @@ public:
   DropboxErrorCode copyFile(std::string from, std::string to, DropboxMetadata&);
   DropboxErrorCode moveFile(std::string from, std::string to, DropboxMetadata&);
 
+  DropboxErrorCode createFolder(const std::string path, DropboxMetadata&);
+
 private:
   DropboxErrorCode  copyOrMove(const std::string,
     const std::string,

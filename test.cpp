@@ -150,13 +150,25 @@ int main(int argc, char** argv) {
   cout << "moved file metadata: " << endl;
   dumpMetadata(m);
 
-  sleep(10);
+  d.createFolder("/dummydir", m);
+  cout << "created folder metadata: " << endl;
+  dumpMetadata(m);
+
+  sleep(30);
+  d.deleteFile("/test2", m);
+
+  cout << "deleted file metadata: " << endl;
+  dumpMetadata(m);
+
   d.deleteFile("/test.txt.bk2", m);
 
   cout << "deleted file metadata: " << endl;
   dumpMetadata(m);
 
+  d.deleteFile("dummydir", m);
 
+  cout << "deleted file metadata: " << endl;
+  dumpMetadata(m);
   return 0;
 }
 
