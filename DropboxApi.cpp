@@ -58,6 +58,12 @@ void DropboxApi::setRoot(const string root) {
 
 DropboxErrorCode DropboxApi::execute(shared_ptr<HttpRequest> r) {
   int ret;
+
+  {
+    lock_guard<mutex> g(stateLock_);
+    oauth_->addOAuthAccessHeader(r.get());
+  }
+
   if ((ret = r->execute())) {
     stringstream ss;
     ss << "Curl error (code = " << ret << ")";
@@ -71,11 +77,6 @@ DropboxErrorCode DropboxApi::execute(shared_ptr<HttpRequest> r) {
 DropboxErrorCode DropboxApi::getAccountInfo(AccountInfo& info) {
   shared_ptr<HttpRequest> r(
     httpFactory_->createHttpRequest("https://api.dropbox.com/1/account/info"));
-
-  {
-    lock_guard<mutex> g(stateLock_);
-    oauth_->addOAuthAccessHeader(r.get());
-  }
 
   DropboxErrorCode code = execute(r);
 
@@ -93,11 +94,6 @@ DropboxErrorCode DropboxApi::getFileMetadata(DropboxMetadataRequest& req,
   ss << "https://api.dropbox.com/1/metadata/" << root_ << "/" << req.path();
 
   shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
-
-  {
-    lock_guard<mutex> g(stateLock_);
-    oauth_->addOAuthAccessHeader(r.get());
-  }
 
   r->setMethod(HttpGetRequest);
 
@@ -141,12 +137,7 @@ DropboxErrorCode DropboxApi::getRevisions(string path,
   ss << "https://api.dropbox.com/1/revisions/" << root_ << "/" << path;
 
   shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
-
-  {
-    lock_guard<mutex> g(stateLock_);
-    oauth_->addOAuthAccessHeader(r.get());
-  }
-
+  
   r->setMethod(HttpGetRequest);
 
   if (numRevisions) {
@@ -172,11 +163,6 @@ DropboxErrorCode DropboxApi::restoreFile(string path,
 
   shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
 
-  {
-    lock_guard<mutex> g(stateLock_);
-    oauth_->addOAuthAccessHeader(r.get());
-  }
-
   r->setMethod(HttpPostRequest);
   r->addParam("rev", rev);
 
@@ -201,11 +187,6 @@ DropboxErrorCode DropboxApi::restoreFile(string path,
 DropboxErrorCode DropboxApi::deleteFile(string path, DropboxMetadata& m) {
   shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(
     "https://api.dropbox.com/1/fileops/delete"));
-
-  {
-    lock_guard<mutex> g(stateLock_);
-    oauth_->addOAuthAccessHeader(r.get());
-  }
 
   r->addParam("root", root_);
   r->addParam("path", path);
@@ -236,12 +217,7 @@ DropboxErrorCode DropboxApi::copyOrMove(const string from,
   ss << "https://api.dropbox.com/1/fileops/" << op;
 
   shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
-
-  {
-    lock_guard<mutex> g(stateLock_);
-    oauth_->addOAuthAccessHeader(r.get());
-  }
-
+  
   r->addParam("root", root_);
   r->addParam("from_path", from);
   r->addParam("to_path", to);
@@ -280,12 +256,7 @@ DropboxErrorCode DropboxApi::createFolder(const string path,
     DropboxMetadata& m) {
   shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(
     "https://api.dropbox.com/1/fileops/create_folder"));
-
-  {
-    lock_guard<mutex> g(stateLock_);
-    oauth_->addOAuthAccessHeader(r.get());
-  }
-
+  
   r->addParam("root", root_);
   r->addParam("path", path);
 
