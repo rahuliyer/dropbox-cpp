@@ -43,6 +43,8 @@ public:
     size_t numRevisions, 
     DropboxRevisions&);
 
+  DropboxErrorCode restoreFile(std::string path, std::string, DropboxMetadata&);
+
 private:
   DropboxErrorCode    execute(std::shared_ptr<http::HttpRequest>);
 

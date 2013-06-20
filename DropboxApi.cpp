@@ -2,12 +2,18 @@
 
 #include "util/HttpRequest.h"
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
 #include <sstream>
 
 using namespace dropbox;
 using namespace oauth;
 using namespace http;
 using namespace std;
+
+using namespace boost::property_tree;
+using namespace boost::property_tree::json_parser;
 
 DropboxApi::DropboxApi(string appKey, string appSecret) {
   httpFactory_ = HttpRequestFactory::createFactory();
@@ -154,6 +160,40 @@ DropboxErrorCode DropboxApi::getRevisions(string path,
 
   string response((char *)r->getResponse(), r->getResponseSize());
   revs.readFromJson(response);
+
+  return code;
+}
+
+DropboxErrorCode DropboxApi::restoreFile(string path, 
+    string rev, DropboxMetadata& m) {
+  stringstream ss;
+
+  ss << "https://api.dropbox.com/1/restore/" << root_ << "/" << path;
+
+  shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
+
+  {
+    lock_guard<mutex> g(stateLock_);
+    oauth_->addOAuthAccessHeader(r.get());
+  }
+
+  r->setMethod(HttpPostRequest);
+  r->addParam("rev", rev);
+
+  DropboxErrorCode code = execute(r);
+  if (code != SUCCESS) {
+    return code;
+  }
+
+  string response((char *)r->getResponse(), r->getResponseSize());
+
+  stringstream s;
+  s << response;
+
+  ptree pt;
+  read_json(s, pt);
+
+  DropboxMetadata::readFromJson(pt, m);
 
   return code;
 }

@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
 
   cout << endl;
 
-  DropboxMetadataRequest req("/", true, false);
+  DropboxMetadataRequest req("/", true, true);
   DropboxMetadataResponse res;
   d.getFileMetadata(req, res);
 
@@ -129,13 +129,18 @@ int main(int argc, char** argv) {
   }
 
   DropboxRevisions revs;
-  d.getRevisions("/test.txt", 2, revs);
+  d.getRevisions("/test2", 2, revs);
 
   cout << "Revisions" << endl;
   for (auto i : revs.getRevisions()) {
     dumpMetadata(i);
   }
 
+  DropboxMetadata delMetadata;
+  d.restoreFile("/test2", "160ef6ddfe", delMetadata);
+
+  cout << "restored file metadata: " << endl;
+  dumpMetadata(delMetadata);
   return 0;
 }
 
