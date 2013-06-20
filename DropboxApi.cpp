@@ -227,3 +227,51 @@ DropboxErrorCode DropboxApi::deleteFile(string path, DropboxMetadata& m) {
 
   return code;
 }
+
+DropboxErrorCode DropboxApi::copyOrMove(const string from, 
+    const string to,
+    const string op,
+    DropboxMetadata& m) {
+  stringstream ss;
+  ss << "https://api.dropbox.com/1/fileops/" << op;
+
+  shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
+
+  {
+    lock_guard<mutex> g(stateLock_);
+    oauth_->addOAuthAccessHeader(r.get());
+  }
+
+  r->addParam("root", root_);
+  r->addParam("from_path", from);
+  r->addParam("to_path", to);
+
+  DropboxErrorCode code = execute(r);
+  if (code != SUCCESS) {
+    return code;
+  }
+  
+  string response((char *)r->getResponse(), r->getResponseSize());
+
+  stringstream s;
+  s << response;
+
+  ptree pt;
+  read_json(s, pt);
+
+  DropboxMetadata::readFromJson(pt, m);
+
+  return code;
+}
+
+DropboxErrorCode DropboxApi::copyFile(string from,
+    string to,
+    DropboxMetadata& m) {
+  return copyOrMove(from, to, "copy", m);
+}
+
+DropboxErrorCode DropboxApi::moveFile(string from,
+    string to,
+    DropboxMetadata& m) {
+  return copyOrMove(from, to, "move", m);
+}

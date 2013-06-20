@@ -46,9 +46,16 @@ public:
   DropboxErrorCode restoreFile(std::string path, std::string, DropboxMetadata&);
 
   DropboxErrorCode deleteFile(std::string path, DropboxMetadata&);
+  
+  DropboxErrorCode copyFile(std::string from, std::string to, DropboxMetadata&);
+  DropboxErrorCode moveFile(std::string from, std::string to, DropboxMetadata&);
 
 private:
-  DropboxErrorCode    execute(std::shared_ptr<http::HttpRequest>);
+  DropboxErrorCode  copyOrMove(const std::string,
+    const std::string,
+    const std::string,
+    DropboxMetadata&);
+  DropboxErrorCode  execute(std::shared_ptr<http::HttpRequest>);
 
   std::string                     root_;
   std::mutex                      stateLock_;

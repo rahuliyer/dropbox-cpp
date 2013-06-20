@@ -136,17 +136,27 @@ int main(int argc, char** argv) {
     dumpMetadata(i);
   }
 
-  DropboxMetadata delMetadata;
-  d.deleteFile("/test2", delMetadata);
-
-  cout << "deleted file metadata: " << endl;
-  dumpMetadata(delMetadata);
-
-  sleep(30);
-  d.restoreFile("/test2", "160ef6ddfe", delMetadata);
+  DropboxMetadata m;
+  d.restoreFile("/test2", "160ef6ddfe", m);
 
   cout << "restored file metadata: " << endl;
-  dumpMetadata(delMetadata);
+  dumpMetadata(m);
+
+  d.copyFile("/test.txt", "/test.txt.bk", m);
+  cout << "copied file metadata: " << endl;
+  dumpMetadata(m);
+
+  d.moveFile("/test.txt.bk", "/test.txt.bk2", m);
+  cout << "moved file metadata: " << endl;
+  dumpMetadata(m);
+
+  sleep(10);
+  d.deleteFile("/test.txt.bk2", m);
+
+  cout << "deleted file metadata: " << endl;
+  dumpMetadata(m);
+
+
   return 0;
 }
 
