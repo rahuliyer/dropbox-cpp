@@ -71,6 +71,14 @@ public:
                                     const int val);
 
   /**
+   * add a Range for Http Get requests
+   *
+   * @param     start   start of the range
+   * @param     end     end of the range, last byte included
+   */
+   void                           addRange(uint64_t start, uint64_t end);
+
+  /**
    * Returns the params in a map of params to values
    *
    * @return    map<string, string>   map of the params and values
@@ -179,6 +187,10 @@ private:
 
   std::map<std::string, std::string>        params_;
   std::map<std::string, std::string>        headers_;
+
+  bool                                      hasRange_;
+  uint64_t                                  rangeStart_;
+  uint64_t                                  rangeEnd_;
 
   size_t                                    responseSize_;
   std::unique_ptr<uint8_t, void(*)(void *)> response_;

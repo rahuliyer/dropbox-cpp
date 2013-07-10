@@ -277,3 +277,31 @@ DropboxErrorCode DropboxApi::createFolder(const string path,
 
   return code;
 }
+
+DropboxErrorCode DropboxApi::getFile(DropboxGetFileRequest& req,
+    DropboxGetFileResponse& res) {
+  stringstream ss;
+  ss << "https://api-content.dropbox.com/1/files/" << root_ << "/" 
+    << req.getPath();
+
+  shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
+  if (req.getRev().compare("")) {
+    r->addParam("rev", req.getRev());
+  }
+
+  if (req.hasRange()) {
+    r->addRange(req.getOffset(), req.getOffset() + req.getLength() - 1);
+  }
+
+  DropboxErrorCode code = execute(r);
+  if (code != SUCCESS && code != PARTIAL_CONTENT) {
+    return code;
+  }
+
+  res.setData(r->getResponse(), r->getResponseSize());
+
+  map<string, string> respHeaders = r->getResponseHeaders();
+  res.setMetadata(respHeaders["x-dropbox-metadata"]);
+
+  return code;
+}

@@ -94,6 +94,7 @@ int main(int argc, char** argv) {
 
   DropboxApi d("2tvqhnmuke5p8h7", "gvqvzr324d5wnrz");
   Foo f;
+  int ret;
 
   if (argc != 3) {
     function<void(string, string)> fn = bind(&Foo::bar, &f, std::placeholders::_1, std::placeholders::_2);
@@ -169,6 +170,25 @@ int main(int argc, char** argv) {
 
   cout << "deleted file metadata: " << endl;
   dumpMetadata(m);
+
+//  DropboxGetFileRequest gfreq("Getting Started.pdf");
+  DropboxGetFileRequest gfreq("Photo May 26, 6 02 34 PM.jpg");
+//  DropboxGetFileRequest gfreq("test.txt");
+  DropboxGetFileResponse gfres;
+  gfreq.setRange(100, 100);
+
+  ret = d.getFile(gfreq, gfres);
+  if (ret != SUCCESS && ret != PARTIAL_CONTENT) {
+    cerr << "Failed to get file! (err code: " << ret << ")" << endl;
+  } else {
+    int fd = open("/tmp/test_file", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+    write(fd, gfres.getData(), gfres.getDataLength());
+    close(fd);
+
+    DropboxMetadata m = gfres.getMetadata();
+    dumpMetadata(m);
+  }
+
   return 0;
 }
 

@@ -43,6 +43,12 @@ void HttpRequest::addIntegerParam(const string& param, const int value) {
   addParam(param, ss.str());
 }
 
+void HttpRequest::addRange(uint64_t start, uint64_t end) {
+  hasRange_ = true;
+  rangeStart_ = start;
+  rangeEnd_ = end;
+}
+
 const map<string, string>& HttpRequest::getParams() const {
   return params_;
 }
@@ -59,16 +65,18 @@ size_t HttpRequest::writeFunction(char* buf, size_t size, size_t n, void *p) {
   size_t numBytes = size * n;
   HttpRequest* r = (HttpRequest *)p;
 
+  uint64_t offset = r->responseSize_;
+
   if (!r->responseSize_) {
     r->responseSize_ = numBytes;
     r->response_.reset((uint8_t *)std::malloc(r->responseSize_));
   } else {
     r->responseSize_ += numBytes;
-    r->response_.reset((uint8_t *)std::realloc(r->response_.get(), 
-      r->responseSize_));
+    uint8_t* p = r->response_.release();
+    r->response_.reset((uint8_t *)std::realloc(p, r->responseSize_));
   }
 
-  memcpy(r->response_.get(), buf, numBytes);
+  memcpy(r->response_.get() + offset, buf, numBytes);
 
   return numBytes;
 }
@@ -209,6 +217,18 @@ int HttpRequest::execute() {
       CURLOPT_HEADERDATA, 
       this))) {
     return ret;
+  }
+
+  // Range
+  if (hasRange_) {
+    stringstream ss;
+    ss << rangeStart_ << "-" << rangeEnd_;
+
+    if ((ret = curl_easy_setopt(curl_.get(), 
+        CURLOPT_RANGE, 
+        ss.str().c_str()))) {
+      return ret;
+    }
   }
 
   // Go!!

@@ -9,6 +9,7 @@
 #include "DropboxAccountInfo.h"
 #include "DropboxMetadata.h"
 #include "DropboxRevisions.h"
+#include "DropboxGetFile.h"
 
 #include <string>
 #include <memory>
@@ -35,6 +36,8 @@ public:
   void setRoot(const std::string);
 
   DropboxErrorCode getAccountInfo(AccountInfo&);
+
+  DropboxErrorCode getFile(DropboxGetFileRequest&, DropboxGetFileResponse&);
 
   DropboxErrorCode getFileMetadata(DropboxMetadataRequest&, 
     DropboxMetadataResponse&);

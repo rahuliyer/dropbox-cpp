@@ -10,6 +10,7 @@ enum DropboxErrorCode {
   CURL_ERROR = -1,
   MALFORMED_RESPONSE = -2,
   SUCCESS = 200,
+  PARTIAL_CONTENT = 206,
   NOT_MODIFIED = 304,
   TOO_MANY_FILES = 406,
 };
