@@ -25,8 +25,9 @@ public:
     cout << "Token: " << token << endl;
     cout << "Secret: " << secret << endl;
 
-    char a;
-    cin >> a;
+    cout << "Go to https://www.dropbox.com/1/oauth/authorize?oauth_token=" 
+      << token << " to authorize" << endl;
+    cin.get();
   }
 };
 
