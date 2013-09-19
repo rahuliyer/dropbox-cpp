@@ -52,6 +52,16 @@ void DropboxApi::setAccessToken(string token, string secret) {
   oauth_->setAccessTokenSecret(secret);
 }
 
+string DropboxApi::getAccessToken() {
+  lock_guard<mutex> g(stateLock_);
+  return oauth_->getAccessToken();
+}
+  
+string DropboxApi::getAccessTokenSecret() {
+  lock_guard<mutex> g(stateLock_);
+  return oauth_->getAccessTokenSecret();
+}
+
 void DropboxApi::setRoot(const string root) {
   lock_guard<mutex> g(stateLock_);
   root_ = root;

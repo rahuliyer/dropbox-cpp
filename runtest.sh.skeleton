@@ -1,0 +1,11 @@
+#!/bin/sh
+
+export DROPBOX_API_KEY=""
+export DROPBOX_API_SECRET=""
+export DROPBOX_AUTH_TOKEN=""
+export DROPBOX_AUTH_TOKEN_SECRET=""
+export DROPBOX_ACCOUNT_NAME=""
+export DROPBOX_ACCOUNT_EMAIL=""
+
+./tester
+

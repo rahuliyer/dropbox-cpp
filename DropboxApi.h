@@ -34,6 +34,9 @@ public:
 
   void setAccessToken(std::string token, std::string secret);
 
+  std::string getAccessToken();
+  std::string getAccessTokenSecret();
+
   void setRoot(const std::string);
 
   DropboxErrorCode getAccountInfo(AccountInfo&);
