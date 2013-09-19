@@ -108,6 +108,20 @@ public:
     std::string>&                 getHeaders() const;
 
   /**
+   * Adds data to the request. This is typically used when uploading files
+   * using a PUT request. The data is *NOT* copied and it is the responsibility
+   * of the owner to make sure the pointer provided as an argument to this
+   * function is valid until the execution of the request completes.
+   *
+   * @param     data      The data to be uploaded
+   * @param     size      Size of the data being uploaded
+   *
+   * @return    void
+   */
+  void                            setRequestData(uint8_t* const data,
+                                    const size_t size);
+
+  /**
    * Dispatch the http request
    *
    * @return    int   The error code returned by curl. 0 on success, 
@@ -178,6 +192,22 @@ public:
    */
   static size_t                   headerFunction(char*, size_t, size_t, void*);
   
+  /**
+   * Callback function to be called to get data that needs to be send on 
+   * HTTP PUT.
+   * This function is called by curl when it needs to get the data to be sent 
+   * on the HTTP PUT. 
+   *
+   * @param     char*   buf     Data to be sent
+   * @param     size_t  nmemb   Number of members
+   * @param     size_t  size    Size of the member
+   * @param     void*   cookie  Any cookie we wish to pass. In this case
+   *                            it's a pointer to the HttpRequest itself
+   *
+   * @return    size_t  The number of bytes sent
+   */
+  static size_t                   readFunction(void*, size_t, size_t, void*);
+
   ~HttpRequest();
 private:
 
@@ -191,6 +221,10 @@ private:
   bool                                      hasRange_;
   uint64_t                                  rangeStart_;
   uint64_t                                  rangeEnd_;
+
+  size_t                                    requestDataSize_;
+  size_t                                    requestDataOffset_;
+  uint8_t*                                  requestData_;
 
   size_t                                    responseSize_;
   std::unique_ptr<uint8_t, void(*)(void *)> response_;

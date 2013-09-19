@@ -156,7 +156,7 @@ int main(int argc, char** argv) {
   cout << "created folder metadata: " << endl;
   dumpMetadata(m);
 
-  sleep(30);
+  //sleep(30);
   d.deleteFile("/test2", m);
 
   cout << "deleted file metadata: " << endl;
@@ -187,6 +187,31 @@ int main(int argc, char** argv) {
     close(fd);
 
     DropboxMetadata m = gfres.getMetadata();
+    dumpMetadata(m);
+  }
+
+  DropboxUploadFileRequest up_req("Photos/mountain.jpg");
+  struct stat s;
+  stat("./test.jpg", &s);
+
+  void* ptr = malloc(s.st_size);
+  int fd = open("./test.jpg", O_RDONLY);
+  read(fd, ptr, s.st_size);
+  up_req.setUploadData((uint8_t *)ptr, s.st_size);
+  
+  ret = d.uploadFile(up_req, m);
+  if (ret != SUCCESS) {
+    cerr << "Failed to upload file! Error code = " << ret << endl;
+  } else {
+    dumpMetadata(m);
+  }
+
+  up_req.setOverwrite(false);
+
+  ret = d.uploadFile(up_req, m);
+  if (ret != SUCCESS) {
+    cerr << "Failed to upload file! Error code = " << ret << endl;
+  } else {
     dumpMetadata(m);
   }
 

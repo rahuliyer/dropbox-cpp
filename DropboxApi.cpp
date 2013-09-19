@@ -6,6 +6,7 @@
 #include <boost/property_tree/json_parser.hpp>
 
 #include <sstream>
+#include <cassert>
 
 using namespace dropbox;
 using namespace oauth;
@@ -302,6 +303,48 @@ DropboxErrorCode DropboxApi::getFile(DropboxGetFileRequest& req,
 
   map<string, string> respHeaders = r->getResponseHeaders();
   res.setMetadata(respHeaders["x-dropbox-metadata"]);
+
+  return code;
+}
+
+DropboxErrorCode DropboxApi::uploadFile(const DropboxUploadFileRequest& req,
+    DropboxMetadata& m) {
+  stringstream ss;
+  ss << "https://api-content.dropbox.com/1/files_put/" << root_ << "/" 
+    << req.getPath();
+
+  shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
+  r->setMethod(HttpPutRequest);
+
+  if (req.shouldOverwrite()) {
+    r->addParam("overwrite", "true");
+  } else {
+    r->addParam("overwrite", "false");
+  }
+
+  if (req.getParentRev().compare("")) {
+    r->addParam("parent_rev", req.getParentRev());
+  }
+
+  assert(req.getUploadData());
+
+  r->setRequestData(req.getUploadData(), req.getUploadDataSize());
+
+  DropboxErrorCode code = execute(r);
+
+  if (code != SUCCESS) {
+    return code;
+  }
+
+  string response((char *)r->getResponse(), r->getResponseSize());
+
+  stringstream s;
+  s << response;
+
+  ptree pt;
+  read_json(s, pt);
+
+  DropboxMetadata::readFromJson(pt, m);
 
   return code;
 }

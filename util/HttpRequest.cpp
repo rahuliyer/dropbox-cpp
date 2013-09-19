@@ -16,7 +16,9 @@ HttpRequest::HttpRequest(HttpRequestFactory* factory,
     string url, 
     HttpRequestMethod method) : factory_(factory), 
       url_(url), 
-      method_(method), 
+      method_(method),
+      requestDataOffset_(0),
+      requestData_(NULL),
       response_(NULL, free),
       curl_(curl_easy_init(), curl_easy_cleanup), 
       slist_(NULL, curl_slist_free_all) {
@@ -59,6 +61,12 @@ void HttpRequest::addHeader(const string& header, const string& value) {
 
 const map<string, string>& HttpRequest::getHeaders() const {
   return headers_;
+}
+
+void HttpRequest::setRequestData(uint8_t* const data, const size_t sz) {
+  requestData_ = data;
+  requestDataSize_ = sz;
+  requestDataOffset_ = 0;
 }
 
 size_t HttpRequest::writeFunction(char* buf, size_t size, size_t n, void *p) {
@@ -118,6 +126,21 @@ size_t HttpRequest::headerFunction(char* buf, size_t sz, size_t n, void *p) {
   return numBytes;
 }
 
+size_t HttpRequest::readFunction(void* buf, size_t size, size_t n, void *p) {
+  HttpRequest* r = (HttpRequest *)p;
+  size_t remBytes = r->requestDataSize_ - r->requestDataOffset_;
+  size_t numBytes = size * n;
+
+  if (numBytes > remBytes) {
+    numBytes = remBytes;
+   }
+
+  memcpy(buf, r->requestData_ + r->requestDataOffset_, numBytes);
+  r->requestDataOffset_ += numBytes;
+
+  return numBytes;
+}
+
 int HttpRequest::execute() {
   int ret = 0;
 
@@ -143,7 +166,9 @@ int HttpRequest::execute() {
   // Set the params
   string paramList;
   bool empty = true;
-  if (method_ == HttpGetRequest || method_ == HttpPostRequest) {
+  if (method_ == HttpGetRequest ||
+      method_ == HttpPostRequest ||
+      method_ == HttpPutRequest) {
     for (auto i : params_) {
       stringstream ss;
       ss << i.first << "=" << i.second;
@@ -161,6 +186,33 @@ int HttpRequest::execute() {
   string url = url_;
   // Set the Http method
   switch (method_) {
+    case HttpPutRequest:
+      if ((ret = curl_easy_setopt(curl_.get(), 
+          CURLOPT_READFUNCTION, 
+          &HttpRequest::readFunction))) {
+        return ret;
+      }
+
+      if ((ret = curl_easy_setopt(curl_.get(), CURLOPT_UPLOAD, 1L))) {
+        return ret;
+      }
+
+      if ((ret = curl_easy_setopt(curl_.get(), CURLOPT_PUT, 1L))) {
+        return ret;
+      }
+    
+      if ((ret = curl_easy_setopt(curl_.get(), 
+          CURLOPT_READDATA, 
+          this))) {
+        return ret;
+      }
+
+      if ((ret = curl_easy_setopt(curl_.get(),
+          CURLOPT_INFILESIZE_LARGE,
+          (curl_off_t)requestDataSize_))) {
+        return ret;
+      }
+
     case HttpGetRequest:
       url += "?";
       url += paramList;
@@ -174,12 +226,6 @@ int HttpRequest::execute() {
       if ((ret = curl_easy_setopt(curl_.get(), 
           CURLOPT_POSTFIELDS, 
           paramList.c_str()))) {
-        return ret;
-      }
-      break;
-
-    case HttpPutRequest:
-      if ((ret = curl_easy_setopt(curl_.get(), CURLOPT_PUT, 1))) {
         return ret;
       }
       break;

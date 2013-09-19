@@ -10,6 +10,7 @@
 #include "DropboxMetadata.h"
 #include "DropboxRevisions.h"
 #include "DropboxGetFile.h"
+#include "DropboxUploadFile.h"
 
 #include <string>
 #include <memory>
@@ -54,6 +55,9 @@ public:
   DropboxErrorCode moveFile(std::string from, std::string to, DropboxMetadata&);
 
   DropboxErrorCode createFolder(const std::string path, DropboxMetadata&);
+
+  DropboxErrorCode uploadFile(const DropboxUploadFileRequest&,
+    DropboxMetadata&);
 
 private:
   DropboxErrorCode  copyOrMove(const std::string,
