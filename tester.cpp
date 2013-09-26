@@ -15,6 +15,7 @@ using namespace dropbox;
 // Globals
 const string TEST_DIR = "/testdir";
 const size_t SIZE = (1 << 20);
+const size_t LARGE_SIZE = 2 * (1 << 20) + 2;
 DropboxApi* d;
 
 class AuthorizationHelper {
@@ -220,6 +221,88 @@ TEST_F(DropboxFileTestCase, DeleteFileTest) {
   EXPECT_STREQ(fileName_.c_str(), m.path_.c_str());
   EXPECT_NE(true, m.isDir_);
   EXPECT_EQ(true, m.isDeleted_);
+}
+
+class DropboxLargeFileTestCase : public BaseDropboxTestCase {
+public:
+  void SetUp() {
+    fileName_ = TEST_DIR + "/largetestfile";
+    data_ = DropboxFileTestCase::getRandomData(LARGE_SIZE);
+    size_t rem_size = LARGE_SIZE;
+    auto cb = [&](uint8_t* buf, size_t off, size_t size) {
+      size_t fetched_size = 0;
+
+      if (size < rem_size) {
+        fetched_size = size;
+      } else {
+        fetched_size = rem_size;
+      }
+      rem_size -= fetched_size;
+      
+      memcpy(buf, data_ + off, fetched_size);
+
+      return fetched_size;
+    };
+
+    DropboxUploadLargeFileRequest req(fileName_, cb, true, "", SIZE, 0);
+    code_ = d->uploadLargeFile(req, md_);
+  }
+  
+  void TearDown() {
+    free(data_);
+  }
+
+  uint8_t*          data_;
+  string            fileName_;
+  DropboxErrorCode  code_;
+  DropboxMetadata   md_;
+};
+
+TEST_F(DropboxLargeFileTestCase, UploadFileTest) {
+  EXPECT_EQ(code_, SUCCESS);
+  EXPECT_STREQ(fileName_.c_str(), md_.path_.c_str());
+  EXPECT_NE(true, md_.isDir_);
+  EXPECT_NE(true, md_.isDeleted_);
+  EXPECT_EQ(LARGE_SIZE, md_.sizeBytes_);
+}
+
+TEST_F(DropboxLargeFileTestCase, NonOverWriteTestCase) {
+  auto cb = [&](uint8_t* buf, size_t offset, size_t sz) {
+    if (offset + sz < LARGE_SIZE) {
+      return sz;
+    } else {
+      return LARGE_SIZE - offset;
+    }
+  };
+
+  DropboxUploadLargeFileRequest req(fileName_, cb,
+    false, "", LARGE_SIZE, 0);
+
+  DropboxMetadata m;
+  DropboxErrorCode code = d->uploadLargeFile(req, m);
+
+  EXPECT_EQ(code, SUCCESS);
+  EXPECT_STRNE(fileName_.c_str(), m.path_.c_str());
+  EXPECT_NE(true, m.isDir_);
+  EXPECT_NE(true, m.isDeleted_);
+  EXPECT_EQ(LARGE_SIZE, m.sizeBytes_);
+}
+
+TEST_F(DropboxLargeFileTestCase, GetFileTestCase) {
+  DropboxMetadata m;
+  DropboxGetFileRequest gfreq(fileName_);
+  DropboxGetFileResponse gfres;
+
+  DropboxErrorCode code = d->getFile(gfreq, gfres);
+  m = gfres.getMetadata();
+
+  EXPECT_EQ(code, SUCCESS);
+  EXPECT_EQ(LARGE_SIZE, gfres.getDataLength());
+  EXPECT_EQ(0, memcmp(data_, gfres.getData(), LARGE_SIZE));
+  EXPECT_STREQ(fileName_.c_str(), m.path_.c_str());
+  EXPECT_EQ(md_.isDir_, m.isDir_);
+  EXPECT_EQ(md_.isDeleted_, m.isDeleted_);
+  EXPECT_EQ(md_.sizeBytes_, m.sizeBytes_);
 }
 
 class DropboxTestEnvironment : public ::testing::Environment {

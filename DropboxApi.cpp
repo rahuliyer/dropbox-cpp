@@ -358,3 +358,87 @@ DropboxErrorCode DropboxApi::uploadFile(const DropboxUploadFileRequest& req,
 
   return code;
 }
+
+DropboxErrorCode DropboxApi::uploadLargeFile(
+    const DropboxUploadLargeFileRequest& req,
+    DropboxMetadata& m) {
+  string uploadId = "";
+  size_t offset = req.getOffset();
+  size_t size = 0;
+  unique_ptr<uint8_t, void(*)(void*)> data(
+    (uint8_t*)malloc(req.getChunkSize()), free);
+
+  if (!data.get()) {
+    throw std::bad_alloc();
+  }
+
+  do {
+    shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(
+      "https://api-content.dropbox.com/1/chunked_upload"));
+    r->setMethod(HttpPutRequest);
+    r->addIntegerParam("offset", offset);
+
+    if (uploadId.compare("")) {
+      r->addParam("upload_id", uploadId);
+    }
+
+    size = req.getData(data.get(), offset, req.getChunkSize());
+    if (!size) {
+      continue;
+    }
+
+    if (size < 0) {
+      throw DropboxException(IO_ERROR, "Error receiving file data");
+    }
+
+    r->setRequestData(data.get(), size);
+     
+    DropboxErrorCode code = execute(r);
+    if (code != SUCCESS) {
+      return code;
+    }
+
+    string response((char *)r->getResponse(), r->getResponseSize());
+
+    DropboxUploadLargeFileResponse res =
+      DropboxUploadLargeFileResponse::readFromJson(response);
+    uploadId = res.getUploadId();
+    offset = res.getOffset();
+  } while (size != 0);
+
+  stringstream ss;
+  ss << "https://api-content.dropbox.com/1/commit_chunked_upload/" << root_
+    << "/" << req.getPath();
+
+  shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
+  r->setMethod(HttpPostRequest);
+
+  if (req.shouldOverwrite()) {
+    r->addParam("overwrite", "true");
+  } else {
+    r->addParam("overwrite", "false");
+  }
+
+  if (req.getParentRev().compare("")) {
+    r->addParam("parent_rev", req.getParentRev());
+  }
+
+  r->addParam("upload_id", uploadId);
+
+  DropboxErrorCode code = execute(r);
+  if (code != SUCCESS) {
+    return code;
+  }
+
+  string response((char *)r->getResponse(), r->getResponseSize());
+
+  stringstream s;
+  s << response;
+
+  ptree pt;
+  read_json(s, pt);
+
+  DropboxMetadata::readFromJson(pt, m);
+
+  return code;
+}

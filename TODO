@@ -3,5 +3,6 @@ root support
 glog integration
 tests!
 Documentation
-clean up json parsing
-clean up authentication
+add restore test
+add metadata children test
+add revisions test

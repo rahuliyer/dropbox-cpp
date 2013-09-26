@@ -11,6 +11,7 @@
 #include "DropboxRevisions.h"
 #include "DropboxGetFile.h"
 #include "DropboxUploadFile.h"
+#include "DropboxUploadLargeFile.h"
 
 #include <string>
 #include <memory>
@@ -60,6 +61,9 @@ public:
   DropboxErrorCode createFolder(const std::string path, DropboxMetadata&);
 
   DropboxErrorCode uploadFile(const DropboxUploadFileRequest&,
+    DropboxMetadata&);
+
+  DropboxErrorCode uploadLargeFile(const DropboxUploadLargeFileRequest&,
     DropboxMetadata&);
 
 private:

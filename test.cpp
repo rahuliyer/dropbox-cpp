@@ -46,6 +46,12 @@ void dumpMetadata(DropboxMetadata& m) {
     "root: " << m.root_ << endl << endl;
 }
 
+size_t getFileData(uint8_t* buf, size_t off, size_t size) {
+  int fd = open("./test.jpg", O_RDONLY);
+  lseek(fd, off, SEEK_SET);
+  return read(fd, buf, size);
+}
+
 int main(int argc, char** argv) {
 #if 0
   OAuth o("2tvqhnmuke5p8h7", "gvqvzr324d5wnrz");
@@ -209,6 +215,26 @@ int main(int argc, char** argv) {
   up_req.setOverwrite(false);
 
   ret = d.uploadFile(up_req, m);
+  if (ret != SUCCESS) {
+    cerr << "Failed to upload file! Error code = " << ret << endl;
+  } else {
+    dumpMetadata(m);
+  }
+
+  DropboxUploadLargeFileRequest l_req("Photos/mountain_large.jpg",
+    getFileData, true, "", 100 * (1UL << 10));
+  ret = d.uploadLargeFile(l_req, m);
+
+  if (ret != SUCCESS) {
+    cerr << "Failed to upload file! Error code = " << ret << endl;
+  } else {
+    dumpMetadata(m);
+  }
+
+  DropboxUploadLargeFileRequest l_req2("Photos/mountain_large.jpg",
+    getFileData, false, "", 100 * (1UL << 10));
+  ret = d.uploadLargeFile(l_req2, m);
+
   if (ret != SUCCESS) {
     cerr << "Failed to upload file! Error code = " << ret << endl;
   } else {

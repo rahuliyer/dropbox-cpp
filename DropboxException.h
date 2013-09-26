@@ -9,6 +9,7 @@ namespace dropbox {
 enum DropboxErrorCode {
   CURL_ERROR = -1,
   MALFORMED_RESPONSE = -2,
+  IO_ERROR = -3,
   SUCCESS = 200,
   PARTIAL_CONTENT = 206,
   NOT_MODIFIED = 304,
