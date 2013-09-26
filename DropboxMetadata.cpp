@@ -70,6 +70,9 @@ void DropboxMetadataResponse::readJson(const string& json) {
     read_json(ss, pt);
     
     DropboxMetadata::readFromJson(pt, metadata_);
+    if (pt.count("contents") == 0) {
+      return;
+    }
 
     BOOST_FOREACH(ptree::value_type& v, pt.get_child("contents")) {
       DropboxMetadata m;

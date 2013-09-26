@@ -305,6 +305,85 @@ TEST_F(DropboxLargeFileTestCase, GetFileTestCase) {
   EXPECT_EQ(md_.sizeBytes_, m.sizeBytes_);
 }
 
+class DropboxMetadataOpsTestCase : public BaseDropboxTestCase {
+public:
+  void SetUp() {
+    fileName_ = TEST_DIR + "/testfile";
+    DropboxUploadFileRequest up_req(fileName_);
+    data_ = DropboxFileTestCase::getRandomData(SIZE);
+    up_req.setUploadData(data_, SIZE);
+
+    code_ = d->uploadFile(up_req, md_);
+    assert(code_ == SUCCESS);
+
+    code_ = d->copyFile(fileName_, fileName_ + "_1", md_);
+
+    code_ = d->copyFile(fileName_, fileName_ + "_2", md_);
+
+    code_ = d->deleteFile(fileName_ + "_2", md_);
+  }
+
+  void TearDown() {
+    free(data_);
+  }
+
+  uint8_t* data_;
+  string fileName_;
+  DropboxErrorCode code_;
+  DropboxMetadata md_;
+};
+
+TEST_F(DropboxMetadataOpsTestCase, MetadataTestCase) {
+  DropboxMetadataRequest req(TEST_DIR);
+  DropboxMetadataResponse res;
+
+  d->getFileMetadata(req, res);
+  DropboxMetadata m = res.getMetadata();
+
+  EXPECT_EQ(TEST_DIR, m.path_);
+  EXPECT_TRUE(m.isDir_);
+  EXPECT_EQ("dropbox", m.root_);
+}
+
+TEST_F(DropboxMetadataOpsTestCase, MetadataListingTestCase) {
+  DropboxMetadataRequest req(TEST_DIR, true);
+  DropboxMetadataResponse res;
+
+  d->getFileMetadata(req, res);
+  vector<DropboxMetadata>& children = res.getChildren();
+
+  EXPECT_EQ(2UL, children.size());
+
+  for (auto m : children) {
+    EXPECT_FALSE(m.isDir_);
+    EXPECT_FALSE(m.isDeleted_);
+  }
+}
+
+TEST_F(DropboxMetadataOpsTestCase, MetadataIncludeDeletesListingTestCase) {
+  DropboxMetadataRequest req(TEST_DIR, true, true);
+  DropboxMetadataResponse res;
+
+  d->getFileMetadata(req, res);
+  vector<DropboxMetadata>& children = res.getChildren();
+
+  EXPECT_LT(3UL, children.size());
+
+  for (auto m : children) {
+    if (m.path_.compare(fileName_ + "_2") == 0) {
+      EXPECT_TRUE(m.isDeleted_);
+    }
+  }
+}
+
+TEST_F(DropboxMetadataOpsTestCase, RevisionsTest) {
+  DropboxRevisions revs;
+
+  d->getRevisions(fileName_ + "_2", 10, revs);
+
+  EXPECT_LE(1UL, revs.getRevisions().size());
+}
+
 class DropboxTestEnvironment : public ::testing::Environment {
 public:
   void SetUp() {
