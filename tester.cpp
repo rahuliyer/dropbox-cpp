@@ -338,8 +338,6 @@ public:
 };
 
 int main(int argc, char **argv) {
-  cout << getenv("DROPBOX_ACCOUNT_NAME") << endl;
-
   ::testing::InitGoogleTest(&argc, argv);
   ::testing::AddGlobalTestEnvironment(new DropboxTestEnvironment());
 
