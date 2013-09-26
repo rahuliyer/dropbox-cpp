@@ -138,7 +138,7 @@ TEST_F(DropboxFileTestCase, UploadFileTest) {
   EXPECT_EQ(SIZE, md_.sizeBytes_);
 }
 
-TEST_F(DropboxFileTestCase, NonOverWriteTestCase) {
+TEST_F(DropboxFileTestCase, NonOverWriteTest) {
   DropboxUploadFileRequest up_req(fileName_);
   up_req.setUploadData(getRandomData(SIZE), SIZE);
   up_req.setOverwrite(false);
@@ -153,7 +153,7 @@ TEST_F(DropboxFileTestCase, NonOverWriteTestCase) {
   EXPECT_EQ(SIZE, m.sizeBytes_);
 }
 
-TEST_F(DropboxFileTestCase, CopyFileTestCase) {
+TEST_F(DropboxFileTestCase, CopyFileTest) {
   string copy_filename = fileName_ + ".bk";
   DropboxMetadata m;
   DropboxErrorCode code = d->copyFile(fileName_, copy_filename, m);
@@ -165,7 +165,7 @@ TEST_F(DropboxFileTestCase, CopyFileTestCase) {
   EXPECT_EQ(md_.sizeBytes_, m.sizeBytes_);
 }
 
-TEST_F(DropboxFileTestCase, MoveFileTestCase) {
+TEST_F(DropboxFileTestCase, MoveFileTest) {
   string copy_filename = fileName_ + ".bk2";
   DropboxMetadata m;
   DropboxErrorCode code = d->moveFile(fileName_, copy_filename, m);
@@ -177,7 +177,7 @@ TEST_F(DropboxFileTestCase, MoveFileTestCase) {
   EXPECT_EQ(md_.sizeBytes_, m.sizeBytes_);
 }
 
-TEST_F(DropboxFileTestCase, GetFileTestCase) {
+TEST_F(DropboxFileTestCase, GetFileTest) {
   DropboxMetadata m;
   DropboxGetFileRequest gfreq(fileName_);
   DropboxGetFileResponse gfres;
@@ -194,7 +194,7 @@ TEST_F(DropboxFileTestCase, GetFileTestCase) {
   EXPECT_EQ(md_.sizeBytes_, m.sizeBytes_);
 }
 
-TEST_F(DropboxFileTestCase, PartialGetFileTestCase) {
+TEST_F(DropboxFileTestCase, PartialGetFileTest) {
   DropboxMetadata m;
   DropboxGetFileRequest gfreq(fileName_);
   DropboxGetFileResponse gfres;
@@ -266,7 +266,7 @@ TEST_F(DropboxLargeFileTestCase, UploadFileTest) {
   EXPECT_EQ(LARGE_SIZE, md_.sizeBytes_);
 }
 
-TEST_F(DropboxLargeFileTestCase, NonOverWriteTestCase) {
+TEST_F(DropboxLargeFileTestCase, NonOverWriteTest) {
   auto cb = [&](uint8_t* buf, size_t offset, size_t sz) {
     if (offset + sz < LARGE_SIZE) {
       return sz;
@@ -288,7 +288,7 @@ TEST_F(DropboxLargeFileTestCase, NonOverWriteTestCase) {
   EXPECT_EQ(LARGE_SIZE, m.sizeBytes_);
 }
 
-TEST_F(DropboxLargeFileTestCase, GetFileTestCase) {
+TEST_F(DropboxLargeFileTestCase, GetFileTest) {
   DropboxMetadata m;
   DropboxGetFileRequest gfreq(fileName_);
   DropboxGetFileResponse gfres;
@@ -333,7 +333,7 @@ public:
   DropboxMetadata md_;
 };
 
-TEST_F(DropboxMetadataOpsTestCase, MetadataTestCase) {
+TEST_F(DropboxMetadataOpsTestCase, MetadataTest) {
   DropboxMetadataRequest req(TEST_DIR);
   DropboxMetadataResponse res;
 
@@ -345,7 +345,7 @@ TEST_F(DropboxMetadataOpsTestCase, MetadataTestCase) {
   EXPECT_EQ("dropbox", m.root_);
 }
 
-TEST_F(DropboxMetadataOpsTestCase, MetadataListingTestCase) {
+TEST_F(DropboxMetadataOpsTestCase, MetadataListingTest) {
   DropboxMetadataRequest req(TEST_DIR, true);
   DropboxMetadataResponse res;
 
@@ -360,7 +360,7 @@ TEST_F(DropboxMetadataOpsTestCase, MetadataListingTestCase) {
   }
 }
 
-TEST_F(DropboxMetadataOpsTestCase, MetadataIncludeDeletesListingTestCase) {
+TEST_F(DropboxMetadataOpsTestCase, MetadataIncludeDeletesListingTest) {
   DropboxMetadataRequest req(TEST_DIR, true, true);
   DropboxMetadataResponse res;
 
