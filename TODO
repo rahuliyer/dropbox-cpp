@@ -1,7 +1,5 @@
 locale support
-root support
 glog integration
-tests!
 Documentation
 add restore test
 add metadata children test
