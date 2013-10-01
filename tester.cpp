@@ -319,7 +319,7 @@ public:
     code_ = d->copyFile(fileName_, fileName_ + "_1", md_);
 
     code_ = d->copyFile(fileName_, fileName_ + "_2", md_);
-
+    savedRev_ = md_.rev_;
     code_ = d->deleteFile(fileName_ + "_2", md_);
   }
 
@@ -331,6 +331,7 @@ public:
   string fileName_;
   DropboxErrorCode code_;
   DropboxMetadata md_;
+  string savedRev_;
 };
 
 TEST_F(DropboxMetadataOpsTestCase, MetadataTest) {
@@ -382,6 +383,22 @@ TEST_F(DropboxMetadataOpsTestCase, RevisionsTest) {
   d->getRevisions(fileName_ + "_2", 10, revs);
 
   EXPECT_LE(1UL, revs.getRevisions().size());
+}
+
+TEST_F(DropboxMetadataOpsTestCase, RestoreTest) {
+  DropboxMetadata m;
+  DropboxErrorCode code = d->restoreFile(fileName_ + "_2", savedRev_, m);
+
+  EXPECT_EQ(SUCCESS, code);
+
+  DropboxGetFileRequest gfreq(fileName_ + "_2");
+  DropboxGetFileResponse gfres;
+
+  code = d->getFile(gfreq, gfres);
+  
+  EXPECT_EQ(SUCCESS, code);
+  EXPECT_EQ(SIZE, gfres.getDataLength());
+  EXPECT_EQ(0, memcmp(gfres.getData(), data_, SIZE));
 }
 
 TEST_F(DropboxMetadataOpsTestCase, SearchTest) {
