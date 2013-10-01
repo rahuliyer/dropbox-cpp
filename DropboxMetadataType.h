@@ -5,9 +5,11 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/foreach.hpp>
 
 #include <sys/types.h>
 #include <string>
+#include <vector>
 
 namespace dropbox {
 
@@ -66,6 +68,19 @@ typedef struct DropboxMetadata {
       m.mimeType_ = pt.get<string>("mime_type", "");
     } catch (exception& e) {
       throw DropboxException(MALFORMED_RESPONSE, e.what());
+    }
+  }
+
+  static void readMetadataListFromJson(boost::property_tree::ptree& pt,
+      std::vector<DropboxMetadata>& list) {
+    using namespace boost::property_tree;
+    using namespace boost::property_tree::json_parser;
+    using namespace std;
+
+    BOOST_FOREACH(ptree::value_type& v, pt) {
+      DropboxMetadata m;
+      readFromJson(v.second, m);
+      list.push_back(m);
     }
   }
 } DropboxMetadata;

@@ -241,6 +241,18 @@ int main(int argc, char** argv) {
     dumpMetadata(m);
   }
 
+  DropboxSearchRequest sreq("/Seattle", "Ph", 10, true);
+  DropboxSearchResult sres;
+
+  ret = d.search(sreq, sres);
+
+  if (ret != SUCCESS) {
+    cerr << "Failed to upload file! Error code = " << ret << endl;
+  } else {
+    for (auto i : sres.getResults()) {
+      dumpMetadata(i);
+    }
+  }
   return 0;
 }
 

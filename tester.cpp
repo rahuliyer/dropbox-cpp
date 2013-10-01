@@ -384,6 +384,28 @@ TEST_F(DropboxMetadataOpsTestCase, RevisionsTest) {
   EXPECT_LE(1UL, revs.getRevisions().size());
 }
 
+TEST_F(DropboxMetadataOpsTestCase, SearchTest) {
+  DropboxSearchRequest req(TEST_DIR, "testfile", false);
+  DropboxSearchResult res;
+
+  DropboxErrorCode code = d->search(req, res);
+  vector<DropboxMetadata> const& v = res.getResults();
+
+  EXPECT_EQ(SUCCESS, code);
+  EXPECT_EQ(2UL, v.size());
+}
+
+TEST_F(DropboxMetadataOpsTestCase, SearchIncludeDeletedTest) {
+  DropboxSearchRequest req(TEST_DIR, "testfile", true);
+  DropboxSearchResult res;
+
+  DropboxErrorCode code = d->search(req, res);
+  vector<DropboxMetadata> const& v = res.getResults();
+
+  EXPECT_EQ(SUCCESS, code);
+  EXPECT_LT(2UL, v.size());
+}
+
 class DropboxTestEnvironment : public ::testing::Environment {
 public:
   void SetUp() {

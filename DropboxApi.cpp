@@ -442,3 +442,32 @@ DropboxErrorCode DropboxApi::uploadLargeFile(
 
   return code;
 }
+
+DropboxErrorCode DropboxApi::search(const DropboxSearchRequest& req,
+    DropboxSearchResult& res) {
+  stringstream ss;
+  ss << "https://api.dropbox.com/1/search/" << root_ << "/" 
+    << req.getSearchPath();
+
+  shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
+
+  r->addParam("query", req.getSearchQuery());
+  r->addIntegerParam("file_limit", req.getResultLimit());
+
+  if (req.shouldIncludeDeleted()) {
+    r->addParam("include_deleted", "true");
+  } else {
+    r->addParam("include_deleted", "false");
+  }
+
+  DropboxErrorCode code = execute(r);
+
+  if (code != SUCCESS) {
+    return code;
+  }
+
+  string response((char *)r->getResponse(), r->getResponseSize());
+  res = DropboxSearchResult::readFromJson(response);
+
+  return code;
+}

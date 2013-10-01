@@ -12,6 +12,7 @@
 #include "DropboxGetFile.h"
 #include "DropboxUploadFile.h"
 #include "DropboxUploadLargeFile.h"
+#include "DropboxSearch.h"
 
 #include <string>
 #include <memory>
@@ -65,6 +66,8 @@ public:
 
   DropboxErrorCode uploadLargeFile(const DropboxUploadLargeFileRequest&,
     DropboxMetadata&);
+
+  DropboxErrorCode search(const DropboxSearchRequest&, DropboxSearchResult&);
 
 private:
   DropboxErrorCode  copyOrMove(const std::string,

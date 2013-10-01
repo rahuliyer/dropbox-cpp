@@ -74,11 +74,8 @@ void DropboxMetadataResponse::readJson(const string& json) {
       return;
     }
 
-    BOOST_FOREACH(ptree::value_type& v, pt.get_child("contents")) {
-      DropboxMetadata m;
-      DropboxMetadata::readFromJson(v.second, m);
-      children_.push_back(m);
-    }
+    DropboxMetadata::readMetadataListFromJson(
+      pt.get_child("contents"), children_);
   } catch (exception& e) {
     throw DropboxException(MALFORMED_RESPONSE, e.what());
   }
