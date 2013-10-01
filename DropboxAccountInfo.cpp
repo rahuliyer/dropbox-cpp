@@ -11,7 +11,7 @@ using namespace std;
 using namespace boost::property_tree;
 using namespace boost::property_tree::json_parser;
 
-void AccountInfo::readFromJson(AccountInfo* info, string& json) {
+void DropboxAccountInfo::readFromJson(DropboxAccountInfo* info, string& json) {
   try {
     stringstream ss;
     ss << json;
@@ -33,34 +33,34 @@ void AccountInfo::readFromJson(AccountInfo* info, string& json) {
   }
 }
 
-AccountInfo::AccountInfo(string& json) {
+DropboxAccountInfo::DropboxAccountInfo(string& json) {
   readFromJson(this, json);
 }
 
-void AccountInfo::readJson(string& json) {
+void DropboxAccountInfo::readJson(string& json) {
   readFromJson(this, json);
 }
 
-string AccountInfo::getReferralLink() const {
+string DropboxAccountInfo::getReferralLink() const {
   return referralLink_;
 }
 
-string AccountInfo::getDisplayName() const {
+string DropboxAccountInfo::getDisplayName() const {
   return displayName_;
 }
 
-string AccountInfo::getUid() const {
+string DropboxAccountInfo::getUid() const {
   return uid_;
 }
 
-string AccountInfo::getCountry() const {
+string DropboxAccountInfo::getCountry() const {
   return country_;
 }
 
-string AccountInfo::getEmail() const {
+string DropboxAccountInfo::getEmail() const {
   return email_;
 }
 
-QuotaInfo AccountInfo::getQuotaInfo() const {
+DropboxQuotaInfo DropboxAccountInfo::getQuotaInfo() const {
   return quotaInfo_;
 }

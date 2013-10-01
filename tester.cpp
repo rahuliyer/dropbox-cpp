@@ -34,7 +34,7 @@ public:
 };
 
 TEST(AccountInfoTestCase, AccountInfoTest) {
-  AccountInfo ac;
+  DropboxAccountInfo ac;
   DropboxErrorCode code = d->getAccountInfo(ac);
 
   EXPECT_EQ(SUCCESS, code);

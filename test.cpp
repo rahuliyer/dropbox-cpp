@@ -110,7 +110,7 @@ int main(int argc, char** argv) {
     d.setAccessToken(argv[1], argv[2]);
   }
 
-  AccountInfo ac2;
+  DropboxAccountInfo ac2;
   cout << "Response: " << d.getAccountInfo(ac2) << endl;
   cout << endl;
   cout << "refferal link: " << ac2.getReferralLink() << endl;

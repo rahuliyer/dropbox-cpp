@@ -41,7 +41,7 @@ public:
 
   void setRoot(const std::string);
 
-  DropboxErrorCode getAccountInfo(AccountInfo&);
+  DropboxErrorCode getAccountInfo(DropboxAccountInfo&);
 
   DropboxErrorCode getFile(DropboxGetFileRequest&, DropboxGetFileResponse&);
 

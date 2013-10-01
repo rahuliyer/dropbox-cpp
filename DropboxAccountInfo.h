@@ -6,35 +6,35 @@
 #include <sys/types.h>
 namespace dropbox {
 
-struct QuotaInfo {
+struct DropboxQuotaInfo {
   uint64_t    shared;
   uint64_t    quota;
   uint64_t    normal;
 };
 
-class AccountInfo {
+class DropboxAccountInfo {
 public:
-  AccountInfo() { }
-  AccountInfo(std::string& json);
+  DropboxAccountInfo() { }
+  DropboxAccountInfo(std::string& json);
 
   void            readJson(std::string&);
 
-  std::string     getReferralLink() const;
-  std::string     getDisplayName() const;
-  std::string     getUid() const;
-  std::string     getCountry() const;
-  std::string     getEmail() const;
-  QuotaInfo       getQuotaInfo() const;
+  std::string         getReferralLink() const;
+  std::string         getDisplayName() const;
+  std::string         getUid() const;
+  std::string         getCountry() const;
+  std::string         getEmail() const;
+  DropboxQuotaInfo    getQuotaInfo() const;
 
 private:
-  static void     readFromJson(AccountInfo*, std::string& json);
+  static void     readFromJson(DropboxAccountInfo*, std::string& json);
 
   std::string           referralLink_;
   std::string           displayName_;
   std::string           uid_;
   std::string           country_;
   std::string           email_;
-  QuotaInfo             quotaInfo_;
+  DropboxQuotaInfo      quotaInfo_;
 };
 }
 #endif
