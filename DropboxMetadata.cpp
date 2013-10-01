@@ -85,7 +85,7 @@ DropboxMetadata& DropboxMetadataResponse::getMetadata() {
   return metadata_;
 }
 
-vector<DropboxMetadata>& DropboxMetadataResponse::getChildren() {
+const vector<DropboxMetadata>& DropboxMetadataResponse::getChildren() const {
   return children_;
 }
 

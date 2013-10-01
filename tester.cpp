@@ -350,7 +350,7 @@ TEST_F(DropboxMetadataOpsTestCase, MetadataListingTest) {
   DropboxMetadataResponse res;
 
   d->getFileMetadata(req, res);
-  vector<DropboxMetadata>& children = res.getChildren();
+  const vector<DropboxMetadata>& children = res.getChildren();
 
   EXPECT_EQ(2UL, children.size());
 
@@ -365,7 +365,7 @@ TEST_F(DropboxMetadataOpsTestCase, MetadataIncludeDeletesListingTest) {
   DropboxMetadataResponse res;
 
   d->getFileMetadata(req, res);
-  vector<DropboxMetadata>& children = res.getChildren();
+  const vector<DropboxMetadata>& children = res.getChildren();
 
   EXPECT_LT(3UL, children.size());
 
