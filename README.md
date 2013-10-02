@@ -4,7 +4,7 @@ dropbox-cpp
 dropbox-cpp is a C++ client for the Dropbox core API.
 
 Building the library and running tests
-======================================
+--------------------------------------
 To build the library:
 ```
 make clean
