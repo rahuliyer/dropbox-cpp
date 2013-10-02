@@ -39,3 +39,42 @@ Access token secret: <some secret>
 
 ```
 
+Using the library
+-----------------
+The API is defined in DropboxApi.h. The DropboxApi class is the core of the library. To get started, instantiate an object of the class:
+```
+DropboxApi d("my_app_token", "my_app_secret");
+```
+
+To get an access token and secret, you need to call the authenticate() function. This function takes a callback as an argument. This callback is called with the OAuth request token and secret as params. A simple callback example is given below:
+```
+class Foo {
+public:
+  Foo() { }
+
+  void bar(string token, string secret) {
+    cout << "Token: " << token << endl;
+    cout << "Secret: " << secret << endl;
+
+    cout << "Go to https://www.dropbox.com/1/oauth/authorize?oauth_token="
+      << token << " to authorize" << endl;
+    cin.get();
+  }
+};
+
+function<void(string, string)> fn = bind(&Foo::bar, &f, std::placeholders::_1, std::placeholders::_2);
+d.authenticate(fn);
+```
+
+Alternatively, if you already have an access token and secret, you can set those instead
+```
+d.setAccessToken("my_access_token", "my_access_token_secret");
+```
+
+Now that you have an authenticated instance of the library, you can start making api calls. Here's an example of getting the account info for the authenticated user:
+```
+DropboxAccountInfo ac2;
+DropboxErrorCode code = d.getAccountInfo(ac2);
+```
+
+For more information, look at DropboxApi.h
