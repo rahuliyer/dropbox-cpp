@@ -30,7 +30,7 @@ Go to https://www.dropbox.com/1/oauth/authorize?oauth_token=<token> to authorize
 Hit any key to continue after authorization
 ```
 
-Visit the link above and grant permissions to the app. Then hit any key to continue. The test suite will print out the access token and secret and start executing the tests.
+Visit the link above and grant permissions to the app. Then hit any key to continue. The test suite will print out the access token and secret and start executing the tests. You can enter the access token and secret into runtest.sh and you will not be prompted to authorize the app again.
 ```
 Access token: <some token>
 Access token secret: <some secret>
