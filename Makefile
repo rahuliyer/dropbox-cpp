@@ -14,10 +14,7 @@ DROPBOX_OBJS=DropboxAccountInfo.o DropboxMetadata.o DropboxRevisions.o \
 	DropboxApi.o 
 OBJS=$(UTIL_OBJS) $(DROPBOX_OBJS)
 
-all: libdropbox.a test.o tester.o
-	$(CXX) $(INCLUDES) $(FLAGS) $(LIBRARY_INCLUDES) $(DEFINES) \
-    test.o libdropbox.a $(COMMON_LIBS) -o test
-
+all: libdropbox.a tester.o
 	$(CXX) $(INCLUDES) $(GTEST_INCLUDES) $(FLAGS) $(LIBRARY_INCLUDES) $(DEFINES) \
     tester.o libdropbox.a $(COMMON_LIBS) $(GTEST_LIBS) -o tester
 
