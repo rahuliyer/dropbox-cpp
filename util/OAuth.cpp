@@ -11,8 +11,8 @@ using namespace http;
 
 OAuth::OAuth(string key,
   string secret, string version, OAuthSecurityMethod method) :
-    consumerKey_(key), 
-    consumerSecret_(secret), 
+    consumerKey_(key),
+    consumerSecret_(secret),
     securityMethod_(method),
     oauthVersion_(version),
     requestFactory_(HttpRequestFactory::createFactory()) {
@@ -85,22 +85,22 @@ void OAuth::addOAuthHeader(HttpRequest* r, string token, string secret) const {
       }
       break;
     default:
-      throw OAuthException(UnsupportedMethod, 
-        "Only Plaintext signature supported");  
+      throw OAuthException(UnsupportedMethod,
+        "Only Plaintext signature supported");
   }
-  
+
   ss << "oauth_signature_method=\"" << signatureMethod << "\", ";
   ss << "oauth_signature=\"" << signature << "\"";
 
   string header = ss.str();
   r->addHeader("Authorization", header);
-} 
+}
 
 void OAuth::fetchRequestToken(string url) {
-  unique_ptr<HttpRequest> r(requestFactory_->createHttpRequest(url)); 
+  unique_ptr<HttpRequest> r(requestFactory_->createHttpRequest(url));
 
   r->setMethod(HttpPostRequest);
- 
+
   addOAuthHeader(r.get(), "", "");
 
   if (r->execute() || r->getResponseCode() != 200) {
@@ -115,10 +115,10 @@ void OAuth::fetchRequestToken(string url) {
 }
 
 void OAuth::fetchAccessToken(string url) {
-  unique_ptr<HttpRequest> r(requestFactory_->createHttpRequest(url)); 
+  unique_ptr<HttpRequest> r(requestFactory_->createHttpRequest(url));
 
   r->setMethod(HttpPostRequest);
- 
+
   addOAuthHeader(r.get(), requestToken_, requestSecret_);
 
   if (r->execute() || r->getResponseCode() != 200) {

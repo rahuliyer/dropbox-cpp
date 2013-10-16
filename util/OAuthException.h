@@ -13,7 +13,7 @@ enum OAuthErrorCode {
 
 class OAuthException : public std::exception {
 public:
-  OAuthException(OAuthErrorCode errcode, std::string errStr) : 
+  OAuthException(OAuthErrorCode errcode, std::string errStr) :
     errCode_(errcode), errStr_(errStr) {
   }
 

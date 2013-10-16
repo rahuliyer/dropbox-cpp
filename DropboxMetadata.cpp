@@ -14,7 +14,7 @@ using namespace boost::property_tree::json_parser;
 
 DropboxMetadataRequest::DropboxMetadataRequest(const string path,
     const bool includeChildren,
-    const bool includeDeleted) : path_(path), 
+    const bool includeDeleted) : path_(path),
       includeChildren_(includeChildren),
       includeDeleted_(includeDeleted) {
   fileLimit_ = DEFAULT_FILE_LIMIT;
@@ -68,7 +68,7 @@ void DropboxMetadataResponse::readJson(const string& json) {
 
     ptree pt;
     read_json(ss, pt);
-    
+
     DropboxMetadata::readFromJson(pt, metadata_);
     if (pt.count("contents") == 0) {
       return;

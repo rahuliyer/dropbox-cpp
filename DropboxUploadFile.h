@@ -9,7 +9,7 @@ class DropboxUploadFileRequest {
 public:
   DropboxUploadFileRequest(const std::string path,
     const bool overwrite = true,
-    const std::string parent_rev = "") : 
+    const std::string parent_rev = "") :
       path_(path),
       overwrite_(overwrite),
       parentRev_(parent_rev),
@@ -29,7 +29,7 @@ public:
     data_ = data;
     dataSize_ = size;
   }
-  
+
   std::string getPath() const {
     return path_;
   }

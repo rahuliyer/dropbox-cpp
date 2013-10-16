@@ -14,7 +14,7 @@ namespace dropbox {
 
 class DropboxGetFileRequest {
 public:
-  DropboxGetFileRequest(std::string path, std::string rev="") : 
+  DropboxGetFileRequest(std::string path, std::string rev="") :
     path_(path), rev_(rev), hasRange_(false) {
   }
 

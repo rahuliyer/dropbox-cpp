@@ -15,7 +15,7 @@ public:
     const bool overwrite = true,
     const std::string parent_rev = "",
     size_t chunkSize = (1UL << 22),
-    size_t offset = 0) : 
+    size_t offset = 0) :
       path_(path),
       dataCb_(cb),
       overwrite_(overwrite),
@@ -63,7 +63,7 @@ public:
 private:
   const std::string   path_;
   std::function<size_t(uint8_t*, size_t, size_t)> dataCb_;
-  
+
   bool                overwrite_;
   std::string         parentRev_;
   size_t              chunkSize_;
@@ -82,7 +82,7 @@ public:
 
     ptree pt;
     read_json(s, pt);
-    
+
     string upId = pt.get<string>("upload_id");
     size_t offset = pt.get<size_t>("offset");
     string expiry = pt.get<string>("expires");

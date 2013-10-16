@@ -41,7 +41,7 @@ public:
    * @param accessToken   Access token for the user's account
    * @param tokenSecret   Access token secret for the user's account
    */
-  DropboxApi(const std::string appKey, 
+  DropboxApi(const std::string appKey,
     const std::string appSecret,
     const std::string accessToken,
     const std::string tokenSecret);
@@ -49,18 +49,18 @@ public:
   /**
    * Get an access token and an access token secret for the given user
    *
-   * @param cb            Callback function to be called to authorize the 
+   * @param cb            Callback function to be called to authorize the
    *                      request token. The request token and request token
    *                      secret are passed as arguments to the callback
    *
    * @return void
    */
-  void authenticate(std::function<void(const std::string reqToken, 
+  void authenticate(std::function<void(const std::string reqToken,
     const std::string reqSecret)>);
 
   /**
    * Set the access token and access token secret if you already have one
-   * 
+   *
    * @param token         The access token
    * @param secret        The access token secret
    *
@@ -85,7 +85,7 @@ public:
   std::string getAccessTokenSecret();
 
   /**
-   * Set the root directory for the client. Valid values are DROPBOX_ROOT and 
+   * Set the root directory for the client. Valid values are DROPBOX_ROOT and
    * SANDBOX_ROOT.
    *
    * @param root            The root directory
@@ -107,7 +107,7 @@ public:
   /**
    * Get file data. This method calls the /files (GET) method of the core API
    *
-   * @param req             DropboxGetFileRequest object containing request 
+   * @param req             DropboxGetFileRequest object containing request
    *                        params
    * @param res             Output parameter; an object of type
    *                        DropboxGetFileResponse that has the response
@@ -119,17 +119,17 @@ public:
 
   /**
    * Get the metadata for a file. This call can also be used to get the
-   * children if the specified file is a directory. This method calls the 
+   * children if the specified file is a directory. This method calls the
    * /metadata method of the core API.
    *
-   * @param req             An object of type DropboxMetadataRequest that has 
+   * @param req             An object of type DropboxMetadataRequest that has
    *                        the params for the request
    * @param res             Output param of type DropboxMetadataResponse that
    *                        holds the result
    *
    * @return Error code for the operation. See DropboxErrorCode for values
    */
-  DropboxErrorCode getFileMetadata(DropboxMetadataRequest& req, 
+  DropboxErrorCode getFileMetadata(DropboxMetadataRequest& req,
     DropboxMetadataResponse& res);
 
   /**
@@ -137,15 +137,15 @@ public:
    * the core API.
    *
    * @param path            Path of the file relative to the root
-   * @param numRevisions    Number of revisions desired. Max is 1000; 
+   * @param numRevisions    Number of revisions desired. Max is 1000;
    *                        default is 10
    * @param revs            Output param of type DropboxRevisions that holds
    *                        the result
    *
    * @return Error code for the operation. See DropboxErrorCode for values
    */
-  DropboxErrorCode getRevisions(std::string path, 
-    size_t numRevisions, 
+  DropboxErrorCode getRevisions(std::string path,
+    size_t numRevisions,
     DropboxRevisions& revs);
 
   /**
@@ -173,7 +173,7 @@ public:
    * @return Error code for the operation. See DropboxErrorCode for values
    */
   DropboxErrorCode deleteFile(std::string path, DropboxMetadata& m);
- 
+
   /**
    * Make a copy of a file. This method calls the /copy method of the core API
    *
@@ -215,8 +215,8 @@ public:
 
   /**
    * Upload a file. This calls the /files_put method of the core API.
-   * 
-   * @param req             Object of type DropboxUploadFileRequest that 
+   *
+   * @param req             Object of type DropboxUploadFileRequest that
    *                        contains the params for the request
    * @param res             Output param of type DropboxMetadata that contains
    *                        the metadata of the uploaded file
@@ -231,7 +231,7 @@ public:
    * 150 MB in size. This uses the /chunked_upload and /commit_chunked_upload
    * methods of the core API
    *
-   * @param req             Object of type DropboxUploadLargeFileRequest that 
+   * @param req             Object of type DropboxUploadLargeFileRequest that
    *                        contains the params for the request
    * @param res             Output param of type DropboxMetadata that contains
    *                        the metadata of the uploaded file
@@ -244,7 +244,7 @@ public:
   /**
    * Search for files matching a given string pattern. This calls the /search
    * method in the core API.
-   * 
+   *
    * @param req             An object of type DropboxSearchRequest that contains
    *                        the params of for the search request
    * @param res             Output param of type DropboxSearchResult that has

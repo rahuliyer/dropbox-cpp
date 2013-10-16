@@ -42,11 +42,11 @@ private:
 class DropboxMetadataResponse {
 public:
   DropboxMetadataResponse();
-  
+
   void                                  readJson(const std::string&);
   DropboxMetadata&                      getMetadata();
   const std::vector<DropboxMetadata>&   getChildren() const;
-  
+
 private:
   void    readMetadataFromJson(boost::property_tree::ptree&, DropboxMetadata&);
 

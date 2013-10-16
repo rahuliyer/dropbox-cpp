@@ -24,9 +24,9 @@ DropboxApi::DropboxApi(string appKey, string appSecret) {
   root_ = DROPBOX_ROOT;
 }
 
-DropboxApi::DropboxApi(string appKey, 
-    string appSecret, 
-    string accessToken, 
+DropboxApi::DropboxApi(string appKey,
+    string appSecret,
+    string accessToken,
     string tokenSecret) {
   httpFactory_ = HttpRequestFactory::createFactory();
 
@@ -40,7 +40,7 @@ void DropboxApi::authenticate(function<void(const string, const string)> cb) {
   lock_guard<mutex> g(stateLock_);
 
   oauth_->fetchRequestToken("https://api.dropbox.com/1/oauth/request_token");
-  
+
   cb(oauth_->getRequestToken(), oauth_->getRequestTokenSecret());
 
   oauth_->fetchAccessToken("https://api.dropbox.com/1/oauth/access_token");
@@ -56,7 +56,7 @@ string DropboxApi::getAccessToken() {
   lock_guard<mutex> g(stateLock_);
   return oauth_->getAccessToken();
 }
-  
+
 string DropboxApi::getAccessTokenSecret() {
   lock_guard<mutex> g(stateLock_);
   return oauth_->getAccessTokenSecret();
@@ -113,7 +113,7 @@ DropboxErrorCode DropboxApi::getFileMetadata(DropboxMetadataRequest& req,
   if (req.getHash().compare("")) {
     r->addParam("hash", req.getHash());
   }
-  
+
   if (req.includeChildren()) {
     r->addParam("list", "true");
   } else {
@@ -148,7 +148,7 @@ DropboxErrorCode DropboxApi::getRevisions(string path,
   ss << "https://api.dropbox.com/1/revisions/" << root_ << "/" << path;
 
   shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
-  
+
   r->setMethod(HttpGetRequest);
 
   if (numRevisions) {
@@ -166,7 +166,7 @@ DropboxErrorCode DropboxApi::getRevisions(string path,
   return code;
 }
 
-DropboxErrorCode DropboxApi::restoreFile(string path, 
+DropboxErrorCode DropboxApi::restoreFile(string path,
     string rev, DropboxMetadata& m) {
   stringstream ss;
 
@@ -206,7 +206,7 @@ DropboxErrorCode DropboxApi::deleteFile(string path, DropboxMetadata& m) {
   if (code != SUCCESS) {
     return code;
   }
-  
+
   string response((char *)r->getResponse(), r->getResponseSize());
 
   stringstream s;
@@ -220,7 +220,7 @@ DropboxErrorCode DropboxApi::deleteFile(string path, DropboxMetadata& m) {
   return code;
 }
 
-DropboxErrorCode DropboxApi::copyOrMove(const string from, 
+DropboxErrorCode DropboxApi::copyOrMove(const string from,
     const string to,
     const string op,
     DropboxMetadata& m) {
@@ -228,7 +228,7 @@ DropboxErrorCode DropboxApi::copyOrMove(const string from,
   ss << "https://api.dropbox.com/1/fileops/" << op;
 
   shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
-  
+
   r->addParam("root", root_);
   r->addParam("from_path", from);
   r->addParam("to_path", to);
@@ -237,7 +237,7 @@ DropboxErrorCode DropboxApi::copyOrMove(const string from,
   if (code != SUCCESS) {
     return code;
   }
-  
+
   string response((char *)r->getResponse(), r->getResponseSize());
 
   stringstream s;
@@ -267,7 +267,7 @@ DropboxErrorCode DropboxApi::createFolder(const string path,
     DropboxMetadata& m) {
   shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(
     "https://api.dropbox.com/1/fileops/create_folder"));
-  
+
   r->addParam("root", root_);
   r->addParam("path", path);
 
@@ -275,7 +275,7 @@ DropboxErrorCode DropboxApi::createFolder(const string path,
   if (code != SUCCESS) {
     return code;
   }
-  
+
   string response((char *)r->getResponse(), r->getResponseSize());
 
   stringstream s;
@@ -292,7 +292,7 @@ DropboxErrorCode DropboxApi::createFolder(const string path,
 DropboxErrorCode DropboxApi::getFile(DropboxGetFileRequest& req,
     DropboxGetFileResponse& res) {
   stringstream ss;
-  ss << "https://api-content.dropbox.com/1/files/" << root_ << "/" 
+  ss << "https://api-content.dropbox.com/1/files/" << root_ << "/"
     << req.getPath();
 
   shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
@@ -320,7 +320,7 @@ DropboxErrorCode DropboxApi::getFile(DropboxGetFileRequest& req,
 DropboxErrorCode DropboxApi::uploadFile(const DropboxUploadFileRequest& req,
     DropboxMetadata& m) {
   stringstream ss;
-  ss << "https://api-content.dropbox.com/1/files_put/" << root_ << "/" 
+  ss << "https://api-content.dropbox.com/1/files_put/" << root_ << "/"
     << req.getPath();
 
   shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));
@@ -392,7 +392,7 @@ DropboxErrorCode DropboxApi::uploadLargeFile(
     }
 
     r->setRequestData(data.get(), size);
-     
+
     DropboxErrorCode code = execute(r);
     if (code != SUCCESS) {
       return code;
@@ -446,7 +446,7 @@ DropboxErrorCode DropboxApi::uploadLargeFile(
 DropboxErrorCode DropboxApi::search(const DropboxSearchRequest& req,
     DropboxSearchResult& res) {
   stringstream ss;
-  ss << "https://api.dropbox.com/1/search/" << root_ << "/" 
+  ss << "https://api.dropbox.com/1/search/" << root_ << "/"
     << req.getSearchPath();
 
   shared_ptr<HttpRequest> r(httpFactory_->createHttpRequest(ss.str()));

@@ -18,7 +18,7 @@ enum DropboxErrorCode {
 
 class DropboxException : public std::exception {
 public:
-  DropboxException(DropboxErrorCode code, std::string str) : 
+  DropboxException(DropboxErrorCode code, std::string str) :
     errCode_(code), errStr_(str) {
   }
 

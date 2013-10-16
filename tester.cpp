@@ -93,7 +93,7 @@ public:
   static uint8_t* getRandomData(size_t size) {
     int fd = open("/dev/urandom", O_RDONLY);
     assert(fd > 0);
-    
+
     uint8_t* p = (uint8_t *)malloc(size);
     assert(p);
 
@@ -238,7 +238,7 @@ public:
         fetched_size = rem_size;
       }
       rem_size -= fetched_size;
-      
+
       memcpy(buf, data_ + off, fetched_size);
 
       return fetched_size;
@@ -247,7 +247,7 @@ public:
     DropboxUploadLargeFileRequest req(fileName_, cb, true, "", SIZE, 0);
     code_ = d->uploadLargeFile(req, md_);
   }
-  
+
   void TearDown() {
     free(data_);
   }
@@ -395,7 +395,7 @@ TEST_F(DropboxMetadataOpsTestCase, RestoreTest) {
   DropboxGetFileResponse gfres;
 
   code = d->getFile(gfreq, gfres);
-  
+
   EXPECT_EQ(SUCCESS, code);
   EXPECT_EQ(SIZE, gfres.getDataLength());
   EXPECT_EQ(0, memcmp(gfres.getData(), data_, SIZE));

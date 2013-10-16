@@ -36,7 +36,7 @@ HttpRequestFactory* HttpRequestFactory::createFactory() {
   return factory.get();
 }
 
-HttpRequest* HttpRequestFactory::createHttpRequest(string url, 
+HttpRequest* HttpRequestFactory::createHttpRequest(string url,
     HttpRequestMethod method) {
   return new HttpRequest(this, url, method);
 }

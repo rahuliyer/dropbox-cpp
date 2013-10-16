@@ -22,10 +22,10 @@ public:
    * @param consumer_key      The API key/app id for your app
    * @param consumer_secret   The API secret for your app
    * @param version           OAuth version
-   * @param method            The OAUth security method defined in 
+   * @param method            The OAUth security method defined in
    *                          OAuthSecurityMethod
    */
-  OAuth(const std::string consumer_key, 
+  OAuth(const std::string consumer_key,
     const std::string consumer_secret,
     const std::string version = "1.0",
     OAuthSecurityMethod method = OAuthSecPlaintext);
@@ -47,8 +47,8 @@ public:
    * http://oauth.net/core/1.0/#auth_step3
    *
    * NOTE: This api call assumes that the "Obtaining user authorization" step
-   * in the OAuth specification (http://oauth.net/core/1.0/#auth_step2) is 
-   * complete. Since this step isn't standard across service providers, it is 
+   * in the OAuth specification (http://oauth.net/core/1.0/#auth_step2) is
+   * complete. Since this step isn't standard across service providers, it is
    * assumed that this step is done out of band.
    *
    * @param url     The service provider url to fetch the access token
@@ -92,7 +92,7 @@ public:
   void            setAccessToken(std::string accessToken);
 
   /**
-   * Set the access token secret. Use this method when you have a 
+   * Set the access token secret. Use this method when you have a
    * preauthenticated access token secret that you want to use to make API calls
    *
    * @param string    tokenSecret  The pre-authenticated access token
@@ -119,7 +119,7 @@ private:
   const std::string                 oauthVersion_;
 
   http::HttpRequestFactory* const   requestFactory_;
-  
+
   std::string                       requestToken_;
   std::string                       requestSecret_;
 

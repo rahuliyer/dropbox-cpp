@@ -25,9 +25,9 @@ public:
    * @param     url       The url to hit
    * @param     method    The Http method (GET/PUT etc.) to use
    */
-  HttpRequest(HttpRequestFactory* factory, std::string url, 
+  HttpRequest(HttpRequestFactory* factory, std::string url,
     HttpRequestMethod method);
-  
+
   /**
    * Set the request method
    *
@@ -55,7 +55,7 @@ public:
    *
    * @return    void
    */
-  void                            addParam(const std::string& param, 
+  void                            addParam(const std::string& param,
                                     const std::string& value);
 
   /**
@@ -83,7 +83,7 @@ public:
    *
    * @return    map<string, string>   map of the params and values
    */
-  const std::map<std::string, 
+  const std::map<std::string,
     std::string>&                 getParams() const;
 
   /**
@@ -96,7 +96,7 @@ public:
    *
    * @return    void
    */
-  void                            addHeader(const std::string& header, 
+  void                            addHeader(const std::string& header,
                                     const std::string& value);
 
   /**
@@ -124,8 +124,8 @@ public:
   /**
    * Dispatch the http request
    *
-   * @return    int   The error code returned by curl. 0 on success, 
-   *                  non zero on failure. 
+   * @return    int   The error code returned by curl. 0 on success,
+   *                  non zero on failure.
    *                  Check /usr/include/curl/curl.h for values
    */
   int                             execute();
@@ -157,12 +157,12 @@ public:
    *
    * @return    map<string, string>   map of header names to values
    */
-  const std::map<std::string, 
+  const std::map<std::string,
     std::string>&                 getResponseHeaders() const;
 
   /**
    * Callback function to be called when data has been received
-   * This function is called by curl when there is data it has successfully 
+   * This function is called by curl when there is data it has successfully
    * read.
    *
    * @param     char*   buf     Data that was received
@@ -171,14 +171,14 @@ public:
    * @param     void*   cookie  Any cookie we wish to pass. In this case
    *                            it's a pointer to the HttpRequest itself
    *
-   * @return    size_t  The number of bytes consumed. If this is not 
+   * @return    size_t  The number of bytes consumed. If this is not
    *                    the same as nmemb * size, curl will throw an error.
    */
   static size_t                   writeFunction(char*, size_t, size_t, void*);
 
   /**
    * Callback function to be called when header data has been received
-   * This function is called by curl when there is header data it has 
+   * This function is called by curl when there is header data it has
    * successfully read.
    *
    * @param     char*   buf     Data that was received
@@ -187,16 +187,16 @@ public:
    * @param     void*   cookie  Any cookie we wish to pass. In this case
    *                            it's a pointer to the HttpRequest itself
    *
-   * @return    size_t  The number of bytes consumed. If this is not 
+   * @return    size_t  The number of bytes consumed. If this is not
    *                    the same as nmemb * size, curl will throw an error.
    */
   static size_t                   headerFunction(char*, size_t, size_t, void*);
-  
+
   /**
-   * Callback function to be called to get data that needs to be send on 
+   * Callback function to be called to get data that needs to be send on
    * HTTP PUT.
-   * This function is called by curl when it needs to get the data to be sent 
-   * on the HTTP PUT. 
+   * This function is called by curl when it needs to get the data to be sent
+   * on the HTTP PUT.
    *
    * @param     char*   buf     Data to be sent
    * @param     size_t  nmemb   Number of members

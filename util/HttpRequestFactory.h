@@ -2,7 +2,7 @@
 #define __HTTP_REQUEST_FACTORY_H__
 
 /**
- * A simple wrapper around curl. This class is a singleton that ensures that 
+ * A simple wrapper around curl. This class is a singleton that ensures that
  * the curl_global_init() function is called only once.
  */
 
@@ -12,8 +12,8 @@
 namespace http {
 
 enum HttpRequestMethod {
-  HttpGetRequest, 
-  HttpPostRequest, 
+  HttpGetRequest,
+  HttpPostRequest,
   HttpPutRequest,
   HttpDeleteRequest,
 };
@@ -31,7 +31,7 @@ public:
   static HttpRequestFactory* createFactory();
 
   /**
-   * Create a HttpRequest. The pointer returned is not managed and must be 
+   * Create a HttpRequest. The pointer returned is not managed and must be
    * freed
    *
    * @param url       url to make the request to
@@ -39,7 +39,7 @@ public:
    *
    * @return  HttpRequest pointer
    */
-  HttpRequest* createHttpRequest(std::string url, 
+  HttpRequest* createHttpRequest(std::string url,
     HttpRequestMethod method=HttpGetRequest);
 
   /**

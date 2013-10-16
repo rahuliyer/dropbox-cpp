@@ -12,15 +12,15 @@
 using namespace http;
 using namespace std;
 
-HttpRequest::HttpRequest(HttpRequestFactory* factory, 
-    string url, 
-    HttpRequestMethod method) : factory_(factory), 
-      url_(url), 
+HttpRequest::HttpRequest(HttpRequestFactory* factory,
+    string url,
+    HttpRequestMethod method) : factory_(factory),
+      url_(url),
       method_(method),
       requestDataOffset_(0),
       requestData_(NULL),
       response_(NULL, free),
-      curl_(curl_easy_init(), curl_easy_cleanup), 
+      curl_(curl_easy_init(), curl_easy_cleanup),
       slist_(NULL, curl_slist_free_all) {
   factory_->increaseRequestCount();
 }
@@ -122,7 +122,7 @@ size_t HttpRequest::headerFunction(char* buf, size_t sz, size_t n, void *p) {
 
 
   r->responseHeaders_[header] = val;
-  
+
   return numBytes;
 }
 
@@ -172,7 +172,7 @@ int HttpRequest::execute() {
     for (auto i : params_) {
       stringstream ss;
       ss << i.first << "=" << i.second;
-      
+
       if (empty) {
         empty = false;
         paramList += ss.str();
@@ -187,8 +187,8 @@ int HttpRequest::execute() {
   // Set the Http method
   switch (method_) {
     case HttpPutRequest:
-      if ((ret = curl_easy_setopt(curl_.get(), 
-          CURLOPT_READFUNCTION, 
+      if ((ret = curl_easy_setopt(curl_.get(),
+          CURLOPT_READFUNCTION,
           &HttpRequest::readFunction))) {
         return ret;
       }
@@ -200,9 +200,9 @@ int HttpRequest::execute() {
       if ((ret = curl_easy_setopt(curl_.get(), CURLOPT_PUT, 1L))) {
         return ret;
       }
-    
-      if ((ret = curl_easy_setopt(curl_.get(), 
-          CURLOPT_READDATA, 
+
+      if ((ret = curl_easy_setopt(curl_.get(),
+          CURLOPT_READDATA,
           this))) {
         return ret;
       }
@@ -223,8 +223,8 @@ int HttpRequest::execute() {
         return ret;
       }
 
-      if ((ret = curl_easy_setopt(curl_.get(), 
-          CURLOPT_POSTFIELDS, 
+      if ((ret = curl_easy_setopt(curl_.get(),
+          CURLOPT_POSTFIELDS,
           paramList.c_str()))) {
         return ret;
       }
@@ -235,32 +235,32 @@ int HttpRequest::execute() {
   }
 
   // Set the URL
-  if ((ret = curl_easy_setopt(curl_.get(), CURLOPT_URL, url.c_str())) 
+  if ((ret = curl_easy_setopt(curl_.get(), CURLOPT_URL, url.c_str()))
       != CURLE_OK) {
     return ret;
   }
 
   // Set the write and header functions and data
-  if ((ret = curl_easy_setopt(curl_.get(), 
-      CURLOPT_WRITEFUNCTION, 
+  if ((ret = curl_easy_setopt(curl_.get(),
+      CURLOPT_WRITEFUNCTION,
       &HttpRequest::writeFunction))) {
     return ret;
   }
 
-  if ((ret = curl_easy_setopt(curl_.get(), 
-      CURLOPT_WRITEDATA, 
+  if ((ret = curl_easy_setopt(curl_.get(),
+      CURLOPT_WRITEDATA,
       this))) {
     return ret;
   }
 
-  if ((ret = curl_easy_setopt(curl_.get(), 
-      CURLOPT_HEADERFUNCTION, 
+  if ((ret = curl_easy_setopt(curl_.get(),
+      CURLOPT_HEADERFUNCTION,
       &HttpRequest::headerFunction))) {
     return ret;
   }
 
-  if ((ret = curl_easy_setopt(curl_.get(), 
-      CURLOPT_HEADERDATA, 
+  if ((ret = curl_easy_setopt(curl_.get(),
+      CURLOPT_HEADERDATA,
       this))) {
     return ret;
   }
@@ -270,8 +270,8 @@ int HttpRequest::execute() {
     stringstream ss;
     ss << rangeStart_ << "-" << rangeEnd_;
 
-    if ((ret = curl_easy_setopt(curl_.get(), 
-        CURLOPT_RANGE, 
+    if ((ret = curl_easy_setopt(curl_.get(),
+        CURLOPT_RANGE,
         ss.str().c_str()))) {
       return ret;
     }
@@ -282,7 +282,7 @@ int HttpRequest::execute() {
     return ret;
   }
 
-  if ((ret = curl_easy_getinfo(curl_.get(), 
+  if ((ret = curl_easy_getinfo(curl_.get(),
       CURLINFO_RESPONSE_CODE, &responseCode_)) != CURLE_OK) {
     return ret;
   }
